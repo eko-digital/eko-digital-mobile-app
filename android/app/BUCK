@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.ekodigital",
+    package = "io.rkb.ekodigital",
 )
 
 android_resource(
     name = "res",
-    package = "com.ekodigital",
+    package = "io.rkb.ekodigital",
     res = "src/main/res",
 )
 

@@ -1,4 +1,4 @@
-package com.ekodigital;
+package io.rkb.ekodigital;
 
 import com.facebook.react.ReactActivity;
 

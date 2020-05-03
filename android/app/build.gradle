@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ekodigital"
+        applicationId "io.rkb.ekodigital"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

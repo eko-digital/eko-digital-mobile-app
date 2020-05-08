@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "64212598771",
+    "firebase_url": "https://eko-digital.firebaseio.com",
+    "project_id": "eko-digital",
+    "storage_bucket": "eko-digital.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64212598771:android:a1796749e732e312665c86",
+        "android_client_info": {
+          "package_name": "io.rkb.ekodigital"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64212598771-n3a0cte0ad5ubcp5hiogdio8jfei903f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.rkb.ekodigital",
+            "certificate_hash": "aebd48d88b364ec6cbd3d8a1411168ce9dde8865"
+          }
+        },
+        {
+          "client_id": "64212598771-qt3856tu7d5dac1lb9mlucb1mtcr7ugi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkWYd-j2TXg0truuMmYUrTr8ZXS9CCg30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64212598771-qt3856tu7d5dac1lb9mlucb1mtcr7ugi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

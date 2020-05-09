@@ -77,6 +77,11 @@ target 'EkoDigital' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'FirebaseUI/Auth'
+  pod 'FirebaseUI/Email'
+  pod 'FirebaseUI/Phone'
+  pod 'FirebaseUI/OAuth'
+
   target 'EkoDigitalTests' do
     inherit! :complete
     # Pods for testing

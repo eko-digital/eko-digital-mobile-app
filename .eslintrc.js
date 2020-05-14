@@ -1,13 +1,7 @@
 module.exports = {
   root: true,
-  extends: [
-    "airbnb-typescript",
-    "airbnb/hooks",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+  extends: ["airbnb", "airbnb/hooks", "plugin:flowtype/recommended"],
+  plugins: [
+    "flowtype"
   ],
-  parserOptions: {
-    project: './tsconfig.json',
-  },
 };

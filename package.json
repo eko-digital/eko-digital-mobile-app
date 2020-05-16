@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.10.1",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/toolbar-android": "^0.1.0-rc.2",
     "@react-native-firebase/app": "^7.0.1",
     "@react-native-firebase/auth": "^7.0.1",
     "@react-native-firebase/firestore": "^7.0.1",
@@ -29,7 +30,7 @@
     "react-native-reanimated": "^1.8.0",
     "react-native-safe-area-context": "^1.0.0",
     "react-native-screens": "^2.7.0",
-    "react-native-vector-icons": "^6.6.0"
+    "react-native-vector-icons": "https://github.com/oblador/react-native-vector-icons.git#14bbe2a"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

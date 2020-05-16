@@ -150,7 +150,7 @@ function DrawerContent(props: Props) {
           <DrawerItem
             icon={({ color, size }) => (
               <MaterialCommunityIcons
-                name="bank"
+                name="bank-outline"
                 color={color}
                 size={size}
               />

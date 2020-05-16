@@ -12,7 +12,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { ActivityIndicator } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 
-
 import type { Account } from '../types';
 import AccountsContext from '../contexts/AccountContext';
 import AccountPicker from './AccountPicker';

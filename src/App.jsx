@@ -5,37 +5,45 @@
  * @format
  * @flow
  */
-import 'react-native-gesture-handler';
-import React, { useState, useEffect } from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import {
-  Provider as PaperProvider,
-  Text,
-  ActivityIndicator,
-  Button,
-  Avatar,
-} from 'react-native-paper';
+import 'react-native-gesture-handler'; // keep it here for react-navigation to work
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 import RNFirebaseAuthUI from './RNFirebaseAuthUI';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+import Main from './components/Main';
+import PreferencesContext from './contexts/PreferencesContext';
+import config from './config';
 
 function App() {
-  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
+
+  const colorScheme = useColorScheme();
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  const loadSavedThemePreference = useCallback(async () => {
+    setTheme(colorScheme === 'dark' ? 'dark' : 'light');
+  }, [colorScheme]);
+
+  useEffect(() => {
+    loadSavedThemePreference();
+  }, [loadSavedThemePreference]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((activeTheme) => (activeTheme === 'light' ? 'dark' : 'light'));
+  }, []);
+
+  const preferences = useMemo(() => ({
+    toggleTheme,
+    theme,
+  }), [theme, toggleTheme]);
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((authUser) => {
@@ -46,30 +54,26 @@ function App() {
       }
 
       setUser(authUser);
-      if (initializing) setInitializing(false);
     });
     return unsubscribe;
-  });
-
-  if (initializing) {
-    return <ActivityIndicator animating />;
-  }
+  }, []);
 
   if (!user) {
     return null;
   }
 
   return (
-    <NavigationContainer>
-      <PaperProvider>
-        <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-        <SafeAreaView style={styles.container}>
-          <Avatar.Image size={64} source={{ uri: user.photoURL || '' }} />
-          <Text>{`Welcome ${user.displayName}`}</Text>
-          <Button mode="contained" onPress={() => auth().signOut()}>Sign Out</Button>
-        </SafeAreaView>
-      </PaperProvider>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <AppearanceProvider>
+        <PreferencesContext.Provider value={preferences}>
+          <PaperProvider
+            theme={theme === 'light' ? config.themes.DefaultTheme : config.themes.DarkTheme}
+          >
+            <Main />
+          </PaperProvider>
+        </PreferencesContext.Provider>
+      </AppearanceProvider>
+    </SafeAreaProvider>
   );
 }
 

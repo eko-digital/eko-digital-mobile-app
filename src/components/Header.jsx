@@ -21,16 +21,19 @@ type Props = {
 function Header({ scene, previous, navigation }: Props) {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const theme = useTheme();
-
-  const { account } = React.useContext(AccountContext);
+  const { activeAccount, accountsCache } = React.useContext(AccountContext);
 
   const toggleMenu = useCallback(() => {
     setMenuVisible((v) => !v);
   }, []);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
+    if (accountsCache) {
+      await accountsCache.clear();
+    }
+
     auth().signOut();
-  }, []);
+  }, [accountsCache]);
 
   const { options } = scene.descriptor;
 
@@ -50,18 +53,18 @@ function Header({ scene, previous, navigation }: Props) {
       {previous && (
         <Appbar.BackAction
           onPress={navigation.goBack}
-          color={theme.colors.primary}
+          color={theme.colors.onSurface}
         />
       )}
 
-      {!previous && account && (
+      {!previous && activeAccount && (
         <TouchableOpacity
           style={{ marginLeft: 10 }}
           onPress={() => {
             navigation.openDrawer();
           }}
         >
-          <UserAvatar account={account} />
+          <UserAvatar account={activeAccount} />
         </TouchableOpacity>
       )}
 
@@ -69,20 +72,22 @@ function Header({ scene, previous, navigation }: Props) {
         title={title}
         titleStyle={{
           fontSize: 18,
-          fontWeight: 'bold',
-          color: theme.colors.primary,
+          color: theme.colors.onSurface,
         }}
       />
 
-      <Menu
-        visible={menuVisible}
-        onDismiss={toggleMenu}
-        anchor={
-          <Appbar.Action icon="dots-vertical" onPress={toggleMenu} />
-        }
-      >
-        <Menu.Item onPress={handleLogout} title="Log out" />
-      </Menu>
+      {options.headerRight || (
+        <Menu
+          visible={menuVisible}
+          onDismiss={toggleMenu}
+          anchor={
+            <Appbar.Action icon="dots-vertical" onPress={toggleMenu} color={theme.colors.onSurface} />
+          }
+        >
+          <Menu.Item onPress={() => { }} title="Help" icon="help-circle-outline" />
+          <Menu.Item onPress={handleLogout} title="Log out" icon="logout-variant" />
+        </Menu>
+      )}
     </Appbar.Header>
   );
 }

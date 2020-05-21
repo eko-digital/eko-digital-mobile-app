@@ -74,7 +74,9 @@ function AccountPicker({
                       {account.name}
                     </Paragraph>
                     <Caption style={styles.accountMeta}>
-                      {account.schoolName}
+                      {account.isTeacher ? 'Teacher' : 'Student'}
+                      {', '}
+                      {account.school.name}
                     </Caption>
                   </View>
                 </View>

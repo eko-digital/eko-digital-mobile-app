@@ -2,9 +2,8 @@
 import React, { useContext } from 'react';
 import color from 'color';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { useTheme, Portal, FAB } from 'react-native-paper';
-import { useSafeArea } from 'react-native-safe-area-context';
-import { useIsFocused, RouteProp } from '@react-navigation/native';
+import { useTheme, Portal } from 'react-native-paper';
+import { useIsFocused, RouteProp, useNavigation } from '@react-navigation/native';
 
 import overlay from '../overlay';
 import Lessons from './Lessons';
@@ -12,27 +11,25 @@ import Assignments from './Assignments';
 import Discuss from './Discuss';
 import Notifications from './Notifications';
 import AccountContext from '../contexts/AccountContext';
+import AddLessonFABGroup from './AddLessonFABGroup';
+import AddAssignmentFABGroup from './AddAssignmentFABGroup';
+import AddTopicFab from './AddTopicFab';
 
 const Tab = createMaterialBottomTabNavigator();
-
-const routesWithFab = ['Lessons', 'Assignments'];
 
 type Props = {
   route: RouteProp<any, 'LessonsList'>;
 };
 
 function BottomTabs({ route }: Props) {
-  const { account } = useContext(AccountContext);
+  const { activeAccount } = useContext(AccountContext);
+  const { navigate } = useNavigation();
   const routeName = route.state
     ? route.state.routes[route.state.index].name
     : 'Lessons';
 
   const theme = useTheme();
-  const safeArea = useSafeArea();
   const isFocused = useIsFocused();
-
-  const fabVisible = isFocused && account
-    && account.isTeacher && routesWithFab.includes(routeName);
 
   const tabBarColor = theme.dark
     ? overlay(6, theme.colors.surface)
@@ -86,22 +83,15 @@ function BottomTabs({ route }: Props) {
         />
       </Tab.Navigator>
       <Portal>
-        <FAB
-          visible={fabVisible}
-          icon="plus"
-          style={{
-            position: 'absolute',
-            bottom: safeArea.bottom + 65,
-            right: 16,
-          }}
-          color="white"
-          theme={{
-            colors: {
-              accent: theme.colors.primary,
-            },
-          }}
-          onPress={() => { }}
-        />
+        {isFocused && activeAccount && activeAccount.isTeacher && routeName === 'Lessons' && (
+          <AddLessonFABGroup navigate={navigate} />
+        )}
+        {isFocused && activeAccount && activeAccount.isTeacher && routeName === 'Assignments' && (
+          <AddAssignmentFABGroup navigate={navigate} />
+        )}
+        {isFocused && activeAccount && routeName === 'Discuss' && (
+          <AddTopicFab navigate={navigate} />
+        )}
       </Portal>
     </>
   );

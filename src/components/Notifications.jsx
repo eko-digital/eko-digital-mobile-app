@@ -1,10 +1,16 @@
 // @flow
 import React from 'react';
-import { Text } from 'react-native-paper';
+
+import EmptyScreen from './EmptyScreen';
+import noMessages from '../images/no-messages.png';
 
 function Notifications() {
   return (
-    <Text>Notifications tab items</Text>
+    <EmptyScreen
+      illustration={noMessages}
+      title="No notifications, yet!"
+      description="When your school sends you notifications they will appear here."
+    />
   );
 }
 

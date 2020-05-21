@@ -6,15 +6,24 @@ import {
 } from '@react-navigation/drawer';
 
 import type { Account } from '../types';
+import AccountsCache from '../helpers/AccountsCache';
 
 type Props = {
-  account: Account | null,
+  loading: boolean,
+  loadingError: boolean,
+  activeAccount: Account | null,
+  accountsCache: AccountsCache | null,
   switchAccount: (navigation: DrawerContentComponentProps<DrawerNavigationProp>) => void,
+  fetchAccounts: () => any,
 }
 
 const AccountContext = React.createContext<Props>({
-  account: null,
-  switchAccount: () => {},
+  loading: false,
+  activeAccount: null,
+  loadingError: false,
+  accountsCache: null,
+  switchAccount: () => { },
+  fetchAccounts: () => { },
 });
 
 export default AccountContext;

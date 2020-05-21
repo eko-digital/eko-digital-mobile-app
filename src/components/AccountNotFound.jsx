@@ -1,57 +1,73 @@
 // @flow
-import React from 'react';
-import { Button, Paragraph, Title } from 'react-native-paper';
-import { StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useContext, useMemo, useCallback } from 'react';
+import { Button, Paragraph } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
+import { Linking } from 'react-native';
 
 import emptyState from '../images/empty-state.png';
+import AccountContext from '../contexts/AccountContext';
+import EmptyScreen from './EmptyScreen';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    maxWidth: 300,
-    alignSelf: 'center',
-  },
-  title: {
-    marginTop: 20,
-  },
-  paragraph: {
-    textAlign: 'center',
-    marginVertical: 8,
-  },
-  button: {
-    marginTop: 20,
-  },
-});
+const ekoDigitalHomeUrl = 'https://eko.digital';
 
 function AccountNotFound() {
-  const handleLogout = React.useCallback(() => {
+  const { accountsCache } = useContext(AccountContext);
+
+  const handleLogout = React.useCallback(async () => {
+    if (accountsCache) {
+      await accountsCache.clear();
+    }
+
     auth().signOut();
+  }, [accountsCache]);
+
+  const openEkoDigital = useCallback(() => {
+    if (Linking.canOpenURL(ekoDigitalHomeUrl)) {
+      Linking.openURL(ekoDigitalHomeUrl);
+    }
+  }, []);
+
+  const emailOrMobileNumber = useMemo(() => {
+    const { currentUser } = auth();
+
+    if (currentUser) {
+      return currentUser.phoneNumber || currentUser.email;
+    }
+
+    return 'this email id or phone number';
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={emptyState} />
-      <Title style={styles.title}>No account found!</Title>
-      <Paragraph style={styles.paragraph}>
-        We could not found any account linked with this email id
-        or phone number in any school&apos;s database.
-      </Paragraph>
-      <Paragraph style={styles.paragraph}>
-        Make sure you login with the same email
-        or phone number you received invitation on.
-      </Paragraph>
-      <Button
-        style={styles.button}
-        mode="contained"
-        onPress={handleLogout}
-      >
-        Sign out
-      </Button>
-    </ScrollView>
+    <EmptyScreen
+      illustration={emptyState}
+      title="No account found!"
+      description={
+        `We could not find any account linked to ${emailOrMobileNumber}`
+          + ' in any of the school\'s database.'
+          + '\n\nPlease login with the same email'
+          + ' or phone number you received the invitation on.'
+          + ' If this error persists, please contact your school.'
+      }
+      extra={(
+        <>
+          <Paragraph>If you are a school then sign up at</Paragraph>
+          <Button
+            mode="text"
+            onClick={openEkoDigital}
+            uppercase={false}
+          >
+            https://eko.digital
+          </Button>
+          <Button
+            style={{ marginTop: 20 }}
+            mode="outlined"
+            onPress={handleLogout}
+          >
+            Log out
+          </Button>
+        </>
+      )}
+    />
   );
 }
 

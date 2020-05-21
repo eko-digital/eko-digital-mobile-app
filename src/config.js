@@ -1,3 +1,4 @@
+// @flow
 import { DefaultTheme, DarkTheme } from 'react-native-paper';
 
 const config = {

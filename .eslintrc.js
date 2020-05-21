@@ -4,4 +4,7 @@ module.exports = {
   plugins: [
     "flowtype"
   ],
+  globals: {
+    "__DEV__": "readonly",
+  }
 };

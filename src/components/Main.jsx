@@ -8,23 +8,19 @@ import React, {
 import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/functions';
 import auth from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-community/async-storage';
 import { ActivityIndicator } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import type { Account } from '../types';
 import AccountsContext from '../contexts/AccountContext';
 import AccountPicker from './AccountPicker';
 import RootNavigator from './RootNavigator';
+import AccountsCache from '../helpers/AccountsCache';
 
 const defaultApp = firebase.app();
 const functionsForMumbaiRegion = defaultApp.functions('asia-east2');
-
-// Use a local emulator in development
-// eslint-disable-next-line no-undef
-if (__DEV__) {
-  functionsForMumbaiRegion.useFunctionsEmulator('http://10.0.2.2:5001');
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -36,35 +32,42 @@ const styles = StyleSheet.create({
 
 function Main() {
   const [showPicker, setShowPicker] = useState<boolean>(false);
-  const [activeAccount, setActiveAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(false);
   const [accounts, setAccounts] = useState([]);
+  const [activeAccount, setActiveAccount] = useState<Account | null>(null);
+
+  const netInfo = useNetInfo();
 
   const user = useMemo(() => auth().currentUser, []);
-  const accountsCacheKey = `accounts_for_${user.uid}`;
-  const activeAccountCacheKey = `active_account_for_${user.uid}`;
+  const accountsCache = useMemo(() => new AccountsCache(user.uid), [user.uid]);
 
   const fetchAccounts = useCallback(async () => {
-    let activeAccountId = null;
-    try {
-      const cachedAccounts = await AsyncStorage.getItem(accountsCacheKey);
-      const cachedActiveAccountId = await AsyncStorage.getItem(activeAccountCacheKey);
-      if (cachedAccounts) {
-        const parsed: Account[] = JSON.parse(cachedAccounts);
-        setAccounts(parsed);
+    setLoading(true);
 
-        const cachedActiveAccount = parsed.find((ac) => ac.id === cachedActiveAccountId);
+    let activeAccountId = null;
+
+    try {
+      const isEmulator = await DeviceInfo.isEmulator();
+      if (isEmulator) {
+        functionsForMumbaiRegion.useFunctionsEmulator('http://10.0.2.2:5001');
+      }
+
+      const cachedAccounts = await accountsCache.getAccounts();
+      const cachedActiveAccountId = await accountsCache.getActiveAccount();
+      if (cachedAccounts) {
+        setAccounts(cachedAccounts);
+
+        const cachedActiveAccount = cachedAccounts.find((ac) => ac.id === cachedActiveAccountId);
 
         if (cachedActiveAccount) {
           setActiveAccount(cachedActiveAccount);
-          activeAccountId = parsed[0].id;
-        } else if (parsed.length > 0) {
-          setActiveAccount(parsed[0]);
-          activeAccountId = parsed[0].id;
-          await AsyncStorage.setItem(activeAccountCacheKey, parsed[0].id);
+          activeAccountId = cachedActiveAccountId;
+        } else if (cachedAccounts.length > 0) {
+          setActiveAccount(cachedAccounts[0]);
+          activeAccountId = cachedAccounts[0].id;
+          await accountsCache.setActiveAccount(cachedAccounts[0].id);
         }
-
-        setLoading(false);
       }
 
       const { data } = await functionsForMumbaiRegion.httpsCallable('getUserAccounts')();
@@ -72,22 +75,26 @@ function Main() {
       if (data.accounts) {
         setAccounts(data.accounts);
 
-        if (data.accounts.length > 0 && activeAccountId !== data.accounts[0].id) {
-          setActiveAccount(data.accounts[0]);
-          await AsyncStorage.setItem(activeAccountCacheKey, data.accounts[0].id);
+        if (data.accounts.length > 0) {
+          const activeAccountFromServer = data.accounts.find((ac) => ac.id === activeAccountId)
+            || data.accounts[0];
+          setActiveAccount(activeAccountFromServer);
+          await accountsCache.setActiveAccount(activeAccountFromServer.id);
         }
 
-        await AsyncStorage.setItem(accountsCacheKey, JSON.stringify(data.accounts));
+        await accountsCache.setAccounts(data.accounts);
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
+      setLoadingError(true);
       console.error('Error fetching accounts', error);
     }
-  }, [accountsCacheKey, activeAccountCacheKey]);
+
+    setLoading(false);
+  }, [accountsCache]);
 
   useEffect(() => {
     fetchAccounts();
-  }, [fetchAccounts]);
+  }, [fetchAccounts, netInfo.isConnected]);
 
   const togglePicker = useCallback(() => {
     setShowPicker((visible) => !visible);
@@ -95,11 +102,11 @@ function Main() {
 
   const handleAccountSelect = useCallback(async (account: Account) => {
     setActiveAccount(account);
-    await AsyncStorage.setItem(activeAccountCacheKey, account.id);
+    await accountsCache.setActiveAccount(account.id);
     setShowPicker(false);
-  }, [activeAccountCacheKey]);
+  }, [accountsCache]);
 
-  if (loading) {
+  if (loading && accounts.length === 0) {
     return (
       <View style={styles.container}>
         <ActivityIndicator animating />
@@ -110,8 +117,12 @@ function Main() {
   return (
     <AccountsContext.Provider
       value={{
-        account: activeAccount,
+        loading,
+        activeAccount,
+        loadingError,
+        accountsCache,
         switchAccount: togglePicker,
+        fetchAccounts,
       }}
     >
       <RootNavigator />

@@ -1,10 +1,25 @@
 // @flow
-import React from 'react';
-import { Text } from 'react-native-paper';
+import React, { useContext } from 'react';
+
+import EmptyScreen from './EmptyScreen';
+import AccountContext from '../contexts/AccountContext';
+import discuss from '../images/discuss.png';
 
 function Discuss() {
+  const { activeAccount } = useContext(AccountContext);
+
   return (
-    <Text>Discussion (Q/A) form</Text>
+    <EmptyScreen
+      illustration={discuss}
+      title="Start discussion"
+      description={
+        activeAccount && activeAccount.isTeacher
+          ? 'Create a new topic to start discussion.'
+          + ' Your students and fellow teachers can view and comment on your topic.'
+          : 'Create a new topic to start discussion.'
+            + ' Your classmates & teachers can view and comment on your topic.'
+      }
+    />
   );
 }
 

@@ -5,7 +5,7 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Caption,
@@ -18,6 +18,7 @@ import {
 } from 'react-native-paper';
 import Animated from 'react-native-reanimated';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import PreferencesContext from '../contexts/PreferencesContext';
 import AccountContext from '../contexts/AccountContext';
 import UserAvatar from './UserAvatar';
@@ -61,17 +62,33 @@ type Props = DrawerContentComponentProps<DrawerNavigationProp>;
 
 function DrawerContent(props: Props) {
   const paperTheme = useTheme();
-  const { account, switchAccount } = React.useContext(AccountContext);
+  const { activeAccount, switchAccount } = React.useContext(AccountContext);
   const { theme, toggleTheme } = React.useContext(PreferencesContext);
 
-  const { progress } = props;
+  const { progress, navigation } = props;
+
+  const openProfile = useCallback(() => {
+    navigation.navigate('Profile');
+  }, [navigation]);
+
+  const openFavourites = useCallback(() => {
+    navigation.navigate('Favourites');
+  }, [navigation]);
+
+  const openSettings = useCallback(() => {
+    navigation.navigate('Settings');
+  }, [navigation]);
+
+  const openSchool = useCallback(() => {
+    navigation.navigate('School');
+  }, [navigation]);
 
   const translateX = Animated.interpolate(progress, {
     inputRange: [0, 0.5, 0.7, 0.8, 1],
     outputRange: [-100, -85, -70, -45, 0],
   });
 
-  if (!account) {
+  if (!activeAccount) {
     return null;
   }
 
@@ -94,7 +111,7 @@ function DrawerContent(props: Props) {
             }}
           >
             <View style={styles.account}>
-              <UserAvatar account={account} style={styles.avatar} />
+              <UserAvatar account={activeAccount} style={styles.avatar} />
               <View style={{ flexShrink: 1 }}>
                 <View style={styles.nameRow}>
                   <Paragraph
@@ -102,7 +119,7 @@ function DrawerContent(props: Props) {
                     numberOfLines={1}
                     ellipsizeMode="middle"
                   >
-                    {account.name}
+                    {activeAccount.name}
                   </Paragraph>
                   <MaterialCommunityIcons
                     name="chevron-down"
@@ -111,7 +128,9 @@ function DrawerContent(props: Props) {
                   />
                 </View>
                 <Caption style={styles.caption}>
-                  {account.schoolName}
+                  {activeAccount.isTeacher ? 'Teacher' : 'Student'}
+                  {', '}
+                  {activeAccount.school.name}
                 </Caption>
               </View>
             </View>
@@ -127,7 +146,7 @@ function DrawerContent(props: Props) {
               />
             )}
             label="Profile"
-            onPress={() => { }}
+            onPress={openProfile}
           />
           <DrawerItem
             icon={({ color, size }) => (
@@ -138,14 +157,14 @@ function DrawerContent(props: Props) {
               />
             )}
             label="Favourites"
-            onPress={() => { }}
+            onPress={openFavourites}
           />
           <DrawerItem
             icon={({ color, size }) => (
               <MaterialCommunityIcons name="tune" color={color} size={size} />
             )}
             label="Settings"
-            onPress={() => { }}
+            onPress={openSettings}
           />
           <DrawerItem
             icon={({ color, size }) => (
@@ -156,7 +175,7 @@ function DrawerContent(props: Props) {
               />
             )}
             label="School"
-            onPress={() => { }}
+            onPress={openSchool}
           />
         </Drawer.Section>
         <Drawer.Section title="Preferences">

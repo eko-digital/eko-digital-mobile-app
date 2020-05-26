@@ -2,22 +2,23 @@
 import * as React from 'react';
 import { ScrollView, Image, StyleSheet } from 'react-native';
 import { Title, Paragraph } from 'react-native-paper';
+import config from '../config';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: config.values.space.normal,
     maxWidth: 300,
     alignSelf: 'center',
   },
   title: {
-    marginTop: 20,
+    marginTop: config.values.space.large,
   },
   description: {
     textAlign: 'center',
-    marginVertical: 8,
+    marginVertical: config.values.space.small,
   },
 });
 

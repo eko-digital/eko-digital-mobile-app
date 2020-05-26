@@ -6,10 +6,11 @@ import {
   useTheme,
 } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
+import config from '../config';
 
 const styles = StyleSheet.create({
   toggleButton: {
-    padding: 8,
+    padding: config.values.space.small,
   },
 });
 

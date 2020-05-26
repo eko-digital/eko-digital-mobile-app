@@ -21,19 +21,15 @@ type Props = {
 function Header({ scene, previous, navigation }: Props) {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const theme = useTheme();
-  const { activeAccount, accountsCache } = React.useContext(AccountContext);
+  const { activeAccount } = React.useContext(AccountContext);
 
   const toggleMenu = useCallback(() => {
     setMenuVisible((v) => !v);
   }, []);
 
   const handleLogout = useCallback(async () => {
-    if (accountsCache) {
-      await accountsCache.clear();
-    }
-
     auth().signOut();
-  }, [accountsCache]);
+  }, []);
 
   const { options } = scene.descriptor;
 
@@ -64,7 +60,10 @@ function Header({ scene, previous, navigation }: Props) {
             navigation.openDrawer();
           }}
         >
-          <UserAvatar account={activeAccount} />
+          <UserAvatar
+            photoURL={activeAccount.photoURL}
+            name={activeAccount.name}
+          />
         </TouchableOpacity>
       )}
 

@@ -10,14 +10,18 @@ import {
   Alert,
 } from 'react-native';
 import { TextInput, useTheme, Button } from 'react-native-paper';
+import config from '../config';
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingVertical: config.values.space.large,
+    paddingHorizontal: config.values.space.normal,
   },
   textInput: {
     marginTop: 12,
+  },
+  sendButton: {
+    marginRight: config.values.space.small,
   },
 });
 
@@ -59,7 +63,7 @@ function NewLesson({ navigation }: Props) {
       headerRight: (
         <Button
           onPress={saveLesson}
-          style={{ marginRight: 8 }}
+          style={styles.sendButton}
           loading={sending}
         >
           Send

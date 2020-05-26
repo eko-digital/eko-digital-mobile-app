@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import EmptyScreen from './EmptyScreen';
 import AccountContext from '../contexts/AccountContext';
 import discuss from '../images/discuss.png';
+import { asTeacher } from '../utils';
 
 function Discuss() {
   const { activeAccount } = useContext(AccountContext);
@@ -13,7 +14,7 @@ function Discuss() {
       illustration={discuss}
       title="Start discussion"
       description={
-        activeAccount && activeAccount.isTeacher
+        activeAccount && asTeacher(activeAccount)
           ? 'Create a new topic to start discussion.'
           + ' Your students and fellow teachers can view and comment on your topic.'
           : 'Create a new topic to start discussion.'

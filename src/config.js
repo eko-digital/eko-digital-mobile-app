@@ -20,6 +20,14 @@ const config = {
       },
     },
   },
+  values: {
+    space: {
+      extraSmall: 4,
+      small: 8,
+      normal: 16,
+      large: 20,
+    },
+  },
 };
 
 export default config;

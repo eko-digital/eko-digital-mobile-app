@@ -1,26 +1,21 @@
 // @flow
 import React, {
   useState,
-  useEffect,
   useCallback,
   useMemo,
+  useEffect,
 } from 'react';
-import firebase from '@react-native-firebase/app';
-import '@react-native-firebase/functions';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { ActivityIndicator } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import { useNetInfo } from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-community/async-storage';
 
-import type { Account } from '../types';
+import type { Student, Teacher, Account } from '../types';
 import AccountsContext from '../contexts/AccountContext';
 import AccountPicker from './AccountPicker';
 import RootNavigator from './RootNavigator';
-import AccountsCache from '../helpers/AccountsCache';
-
-const defaultApp = firebase.app();
-const functionsForMumbaiRegion = defaultApp.functions('asia-east2');
+import useMultipleQuery from '../hooks/useMultipleQuery';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,82 +26,96 @@ const styles = StyleSheet.create({
 });
 
 function Main() {
+  const [initializing, setInitializing] = useState<boolean>(true);
   const [showPicker, setShowPicker] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-  const [loadingError, setLoadingError] = useState(false);
-  const [accounts, setAccounts] = useState([]);
-  const [activeAccount, setActiveAccount] = useState<Account | null>(null);
+  const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
 
-  const netInfo = useNetInfo();
+  const currentUser = useMemo(() => auth().currentUser, []);
+  const activeAccountCacheKey = useMemo(() => `active_account_for_${currentUser.id}`, [currentUser]);
 
-  const user = useMemo(() => auth().currentUser, []);
-  const accountsCache = useMemo(() => new AccountsCache(user.uid), [user.uid]);
-
-  const fetchAccounts = useCallback(async () => {
-    setLoading(true);
-
-    let activeAccountId = null;
-
-    try {
-      const isEmulator = await DeviceInfo.isEmulator();
-      if (isEmulator) {
-        functionsForMumbaiRegion.useFunctionsEmulator('http://10.0.2.2:5001');
-      }
-
-      const cachedAccounts = await accountsCache.getAccounts();
-      const cachedActiveAccountId = await accountsCache.getActiveAccount();
-      if (cachedAccounts) {
-        setAccounts(cachedAccounts);
-
-        const cachedActiveAccount = cachedAccounts.find((ac) => ac.id === cachedActiveAccountId);
-
-        if (cachedActiveAccount) {
-          setActiveAccount(cachedActiveAccount);
-          activeAccountId = cachedActiveAccountId;
-        } else if (cachedAccounts.length > 0) {
-          setActiveAccount(cachedAccounts[0]);
-          activeAccountId = cachedAccounts[0].id;
-          await accountsCache.setActiveAccount(cachedAccounts[0].id);
-        }
-      }
-
-      const { data } = await functionsForMumbaiRegion.httpsCallable('getUserAccounts')();
-
-      if (data.accounts) {
-        setAccounts(data.accounts);
-
-        if (data.accounts.length > 0) {
-          const activeAccountFromServer = data.accounts.find((ac) => ac.id === activeAccountId)
-            || data.accounts[0];
-          setActiveAccount(activeAccountFromServer);
-          await accountsCache.setActiveAccount(activeAccountFromServer.id);
-        }
-
-        await accountsCache.setAccounts(data.accounts);
-      }
-    } catch (error) {
-      setLoadingError(true);
-      console.error('Error fetching accounts', error);
+  const studentsQuery = useMemo(() => {
+    if (!currentUser) {
+      return null;
+    } if (currentUser.phoneNumber) {
+      return firestore().collection('students').where('mobile', '==', currentUser.phoneNumber);
+    } if (currentUser.email && currentUser.emailVerified) {
+      return firestore().collection('students').where('email', '==', currentUser.email);
     }
 
-    setLoading(false);
-  }, [accountsCache]);
+    return null;
+  }, [currentUser]);
+
+  const teachersQuery = useMemo(() => {
+    if (!currentUser) {
+      return null;
+    } if (currentUser.phoneNumber) {
+      return firestore().collection('teachers').where('mobile', '==', currentUser.phoneNumber);
+    } if (currentUser.email && currentUser.emailVerified) {
+      return firestore().collection('teachers').where('email', '==', currentUser.email);
+    }
+
+    return null;
+  }, [currentUser]);
+
+  const {
+    loading,
+    loadingError,
+    isOffline,
+    docs: [students, teachers],
+  } = useMultipleQuery<Student, Teacher>(studentsQuery, teachersQuery);
 
   useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts, netInfo.isConnected]);
+    AsyncStorage.getItem(activeAccountCacheKey).then((cachedActiveAccountId) => {
+      if (cachedActiveAccountId) {
+        setActiveAccountId(cachedActiveAccountId);
+      }
+    });
+  }, [activeAccountCacheKey]);
+
+  const getActiveAccount = useCallback(() => {
+    let activeAccount = students.find((student) => student.id === activeAccountId);
+
+    if (!activeAccount) {
+      activeAccount = teachers.find((teacher) => teacher.id === activeAccountId);
+    }
+    return activeAccount || null;
+  }, [activeAccountId, students, teachers]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    const activeAccount = getActiveAccount();
+
+    if (!activeAccount) {
+      let newActiveAccount = null;
+      if (students.length > 0) {
+        [newActiveAccount] = students;
+      } else if (teachers.length > 0) {
+        [newActiveAccount] = teachers;
+      }
+      if (newActiveAccount) {
+        setActiveAccountId(newActiveAccount.id);
+        AsyncStorage.setItem(activeAccountCacheKey, newActiveAccount.id);
+      }
+    }
+    setInitializing(false);
+  }, [activeAccountCacheKey, getActiveAccount, loading, students, teachers]);
 
   const togglePicker = useCallback(() => {
     setShowPicker((visible) => !visible);
   }, []);
 
   const handleAccountSelect = useCallback(async (account: Account) => {
-    setActiveAccount(account);
-    await accountsCache.setActiveAccount(account.id);
+    setActiveAccountId(account.id);
+    await AsyncStorage.setItem(activeAccountCacheKey, account.id);
     setShowPicker(false);
-  }, [accountsCache]);
+  }, [activeAccountCacheKey]);
 
-  if (loading && accounts.length === 0) {
+  const activeAccount = useMemo(() => getActiveAccount(), [getActiveAccount]);
+
+  if (loading || initializing) {
     return (
       <View style={styles.container}>
         <ActivityIndicator animating />
@@ -120,16 +129,16 @@ function Main() {
         loading,
         activeAccount,
         loadingError,
-        accountsCache,
+        isOffline,
         switchAccount: togglePicker,
-        fetchAccounts,
       }}
     >
       <RootNavigator />
-      {accounts.length > 0 && (
+      {(students.length > 0 || teachers.length > 0) && (
         <AccountPicker
           visible={showPicker}
-          accounts={accounts}
+          students={students}
+          teachers={teachers}
           onToggle={togglePicker}
           onSelect={handleAccountSelect}
         />

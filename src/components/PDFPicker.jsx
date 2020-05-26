@@ -7,10 +7,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import prettyBytes from 'pretty-bytes';
 
 import type { DocumentPickerResult } from '../types';
+import config from '../config';
 
 const styles = StyleSheet.create({
   pickerButton: {
-    padding: 8,
+    padding: config.values.space.small,
   },
 });
 

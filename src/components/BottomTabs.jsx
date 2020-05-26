@@ -14,6 +14,7 @@ import AccountContext from '../contexts/AccountContext';
 import AddLessonFABGroup from './AddLessonFABGroup';
 import AddAssignmentFABGroup from './AddAssignmentFABGroup';
 import AddTopicFab from './AddTopicFab';
+import { asTeacher } from '../utils';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -83,10 +84,10 @@ function BottomTabs({ route }: Props) {
         />
       </Tab.Navigator>
       <Portal>
-        {isFocused && activeAccount && activeAccount.isTeacher && routeName === 'Lessons' && (
+        {isFocused && activeAccount && asTeacher(activeAccount) && routeName === 'Lessons' && (
           <AddLessonFABGroup navigate={navigate} />
         )}
-        {isFocused && activeAccount && activeAccount.isTeacher && routeName === 'Assignments' && (
+        {isFocused && activeAccount && asTeacher(activeAccount) && routeName === 'Assignments' && (
           <AddAssignmentFABGroup navigate={navigate} />
         )}
         {isFocused && activeAccount && routeName === 'Discuss' && (

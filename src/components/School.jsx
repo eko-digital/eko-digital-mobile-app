@@ -11,15 +11,19 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import { DefaultTheme } from '@react-navigation/native';
 
 import AccountContext from '../contexts/AccountContext';
+import useSchool from '../hooks/useSchool';
+import FullScreenActivityIndicator from './FullScreenActivityIndicator';
+import ErrorScreen from './ErrorScreen';
+import config from '../config';
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: config.values.space.normal,
     alignItems: 'center',
   },
   logoWrap: {
-    padding: 8,
-    marginVertical: 16,
+    padding: config.values.space.small,
+    marginVertical: config.values.space.normal,
     backgroundColor: DefaultTheme.colors.background,
   },
   description: {
@@ -28,7 +32,7 @@ const styles = StyleSheet.create({
   },
   contactSection: {
     width: '100%',
-    marginTop: 20,
+    marginTop: config.values.space.large,
   },
 });
 
@@ -36,11 +40,25 @@ function School() {
   const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
 
-  if (!account) {
-    return null;
+  const {
+    loading,
+    loadingError,
+    school,
+    retry,
+  } = useSchool(account);
+
+  if (loading) {
+    return <FullScreenActivityIndicator />;
   }
 
-  const { school } = account;
+  if (loadingError || !school) {
+    return (
+      <ErrorScreen
+        description="Something went wrong while loading school data."
+        onRetry={retry}
+      />
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

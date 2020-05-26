@@ -1,12 +1,15 @@
 // @flow
-
-type Subject = {
-  classId: string,
-  className: string,
-  name: string,
+export type FirestoreTimestamp = {
+  _seconds: number,
 }
 
-type School = {
+export type TeacherClassSubject = {
+  id: string,
+  name: string,
+  subject: string,
+}
+
+export type School = {
   id: string,
   name: string,
   logo?: string,
@@ -15,15 +18,41 @@ type School = {
   phoneNumber?: string,
 }
 
-export type Account = {
+export type SchoolClass = {|
   id: string,
   name: string,
-  photoURL: string | null,
-  school: School,
-  class?: { id: string, name: string }, // available for students only
-  subjects?: Subject[], // available for teachers only
-  isTeacher: boolean,
-}
+  subjects: string[],
+|};
+
+export type Student = {|
+  id: string,
+  name: string,
+  phoneNumber?: string,
+  email?: string,
+  school: string,
+  class: string,
+  photoURL?: string,
+  studentID?: string,
+  father?: string,
+  mother?: string,
+  favoriteLessons?: string[],
+  favoriteAssignments?: string[],
+|};
+
+export type Teacher = {|
+  id: string,
+  name: string,
+  phoneNumber?: string,
+  email?: string,
+  school: string,
+  classes: Array<{
+    id: string,
+    subject: string,
+  }>,
+  photoURL?: string,
+|};
+
+export type Account = Student | Teacher;
 
 export type DocumentPickerResult = {
   name: string,
@@ -32,5 +61,28 @@ export type DocumentPickerResult = {
   uri: string,
 }
 
-export type LessonType = 'video' | 'image' | 'pdf' | 'text';
-export type AssignmentType = 'image' | 'pdf' | 'text';
+export type LessonFormat = 'video' | 'image' | 'pdf' | 'text';
+export type AssignmentFormat = 'image' | 'pdf' | 'text';
+
+export type Post = {|
+  id: string,
+  type: LessonFormat,
+  title: string,
+  description?: string,
+  class: string,
+  subject?: string,
+  teacher: string,
+  school: string,
+  attachment?: string,
+  attachmentName?: string,
+  attachmentSize?: number,
+  videoId?: string,
+  videoToken?: string,
+  thumbnail?: string,
+  duration?: number,
+  status: 'uploading' | 'available' | 'processing-error',
+  createdAt: FirestoreTimestamp,
+|}
+
+export type PostType = 'lesson' | 'assignment';
+export type PostFormat = LessonFormat | AssignmentFormat;

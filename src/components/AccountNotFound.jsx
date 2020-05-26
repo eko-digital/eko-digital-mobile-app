@@ -1,25 +1,25 @@
 // @flow
-import React, { useContext, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Button, Paragraph } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
-import { Linking } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 
 import emptyState from '../images/empty-state.png';
-import AccountContext from '../contexts/AccountContext';
 import EmptyScreen from './EmptyScreen';
+import config from '../config';
 
 const ekoDigitalHomeUrl = 'https://eko.digital';
 
+const styles = StyleSheet.create({
+  button: {
+    marginTop: config.values.space.large,
+  },
+});
+
 function AccountNotFound() {
-  const { accountsCache } = useContext(AccountContext);
-
   const handleLogout = React.useCallback(async () => {
-    if (accountsCache) {
-      await accountsCache.clear();
-    }
-
     auth().signOut();
-  }, [accountsCache]);
+  }, []);
 
   const openEkoDigital = useCallback(() => {
     if (Linking.canOpenURL(ekoDigitalHomeUrl)) {
@@ -59,7 +59,7 @@ function AccountNotFound() {
             https://eko.digital
           </Button>
           <Button
-            style={{ marginTop: 20 }}
+            style={styles.button}
             mode="outlined"
             onPress={handleLogout}
           >

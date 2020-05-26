@@ -22,6 +22,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PreferencesContext from '../contexts/PreferencesContext';
 import AccountContext from '../contexts/AccountContext';
 import UserAvatar from './UserAvatar';
+import SchoolName from './SchoolName';
+import { asTeacher, asStudent } from '../utils';
+import config from '../config';
 
 const styles = StyleSheet.create({
   drawerContent: {
@@ -30,8 +33,7 @@ const styles = StyleSheet.create({
   account: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    padding: config.values.space.normal,
   },
   avatar: {
     marginRight: 10,
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: config.values.space.normal,
   },
 });
 
@@ -111,7 +113,11 @@ function DrawerContent(props: Props) {
             }}
           >
             <View style={styles.account}>
-              <UserAvatar account={activeAccount} style={styles.avatar} />
+              <UserAvatar
+                photoURL={activeAccount.photoURL}
+                name={activeAccount.name}
+                style={styles.avatar}
+              />
               <View style={{ flexShrink: 1 }}>
                 <View style={styles.nameRow}>
                   <Paragraph
@@ -128,9 +134,9 @@ function DrawerContent(props: Props) {
                   />
                 </View>
                 <Caption style={styles.caption}>
-                  {activeAccount.isTeacher ? 'Teacher' : 'Student'}
+                  {asTeacher(activeAccount) ? 'Teacher' : 'Student'}
                   {', '}
-                  {activeAccount.school.name}
+                  <SchoolName account={activeAccount} />
                 </Caption>
               </View>
             </View>
@@ -148,17 +154,19 @@ function DrawerContent(props: Props) {
             label="Profile"
             onPress={openProfile}
           />
-          <DrawerItem
-            icon={({ color, size }) => (
-              <MaterialCommunityIcons
-                name="heart-outline"
-                color={color}
-                size={size}
-              />
-            )}
-            label="Favourites"
-            onPress={openFavourites}
-          />
+          {asStudent(activeAccount) && (
+            <DrawerItem
+              icon={({ color, size }) => (
+                <MaterialCommunityIcons
+                  name="heart-outline"
+                  color={color}
+                  size={size}
+                />
+              )}
+              label="Favourites"
+              onPress={openFavourites}
+            />
+          )}
           <DrawerItem
             icon={({ color, size }) => (
               <MaterialCommunityIcons name="tune" color={color} size={size} />

@@ -1,5 +1,10 @@
 // @flow
-import React, { useContext, useCallback, useState } from 'react';
+import React, {
+  useContext,
+  useCallback,
+  useState,
+  useMemo,
+} from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { useTheme, List, TouchableRipple } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,12 +13,17 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
+import type { SchoolClass, TeacherClassSubject } from '../types';
 import UserAvatar from './UserAvatar';
 import AccountContext from '../contexts/AccountContext';
+import { asTeacher, asStudent, getTeacherClassSubjects } from '../utils';
+import useSchool from '../hooks/useSchool';
+import useSchoolClasses from '../hooks/useSchoolClasses';
+import config from '../config';
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: config.values.space.normal,
     alignItems: 'center',
   },
   photoButton: {
@@ -36,9 +46,11 @@ function Profile() {
   const [uploading, setUploading] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
 
-  const { activeAccount: account, fetchAccounts } = useContext(AccountContext);
+  const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
   const { currentUser } = auth();
+  const { school } = useSchool(account);
+  const { classes } = useSchoolClasses(account);
 
   const uploadImage = useCallback(async (localImagePath: string) => {
     if (!account) {
@@ -48,7 +60,7 @@ function Profile() {
     setUploading(true);
 
     try {
-      const collection = account.isTeacher ? 'teachers' : 'students';
+      const collection = asTeacher(account) ? 'teachers' : 'students';
 
       const remoteRef = storage().ref(`users/${currentUser.uid}/photos/${account.id}`);
       await remoteRef.putFile(localImagePath);
@@ -76,7 +88,6 @@ function Profile() {
       });
       setImage(result.path);
       await uploadImage(result.path);
-      await fetchAccounts();
       setImage(null);
     } catch (error) {
       if (error.message.toLowerCase().includes('user cancelled')) {
@@ -84,7 +95,23 @@ function Profile() {
       }
       console.error(error);
     }
-  }, [fetchAccounts, theme.colors.primary, uploadImage]);
+  }, [theme.colors.primary, uploadImage]);
+
+  const studentClass: SchoolClass | null = useMemo(() => {
+    const student = asStudent(account);
+    if (student && classes) {
+      return classes.find((c) => c.id === student.class) || null;
+    }
+    return null;
+  }, [account, classes]);
+
+  const teacherClasses: TeacherClassSubject[] | null = useMemo(() => {
+    const teacher = asTeacher(account);
+    if (!teacher) {
+      return null;
+    }
+    return getTeacherClassSubjects(teacher, classes);
+  }, [account, classes]);
 
   if (!account || !currentUser) {
     return null;
@@ -99,7 +126,8 @@ function Profile() {
       >
         <>
           <UserAvatar
-            account={image ? { ...account, photoURL: image } : account}
+            photoURL={image || account.photoURL}
+            name={account.name}
             size={144}
             loading={uploading}
           />
@@ -139,23 +167,23 @@ function Profile() {
         )}
         <List.Item
           title="School"
-          description={account.school.name}
+          description={school ? school.name : '...'}
           // eslint-disable-next-line react/jsx-props-no-spreading
           left={(props) => <List.Icon {...props} icon="bank-outline" />}
         />
-        {account.isTeacher && account.subjects && (
+        {teacherClasses && (
           <List.Item
             title="Class/Subjects"
-            description={account.subjects.map(({ name, className }) => `${className}: ${name}`).join('\n')}
+            description={teacherClasses.map(({ name, subject }) => (subject ? `${name}: ${subject}` : name)).join('\n')}
             // eslint-disable-next-line react/jsx-props-no-spreading
             left={(props) => <List.Icon {...props} icon="teach" />}
             descriptionNumberOfLines={100}
           />
         )}
-        {!account.isTeacher && account.class && (
+        {studentClass && (
           <List.Item
             title="Class"
-            description={account.class.name}
+            description={studentClass.name}
             // eslint-disable-next-line react/jsx-props-no-spreading
             left={(props) => <List.Icon {...props} icon="teach" />}
           />

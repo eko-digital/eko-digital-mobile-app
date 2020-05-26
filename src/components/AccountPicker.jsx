@@ -9,21 +9,24 @@ import {
 } from 'react-native-paper';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
-import type { Account } from '../types';
+import type { Student, Teacher, Account } from '../types';
 import UserAvatar from './UserAvatar';
+import SchoolName from './SchoolName';
+import { asTeacher } from '../utils';
+import config from '../config';
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    paddingBottom: 20,
+    paddingBottom: config.values.space.large,
   },
   account: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: config.values.space.small,
+    paddingHorizontal: config.values.space.normal,
   },
   avatar: {
-    marginRight: 10,
+    marginRight: config.values.space.normal,
   },
   accountName: {
     flexShrink: 1,
@@ -38,14 +41,16 @@ const styles = StyleSheet.create({
 
 type Props = {
   visible: boolean,
-  accounts: Account[],
+  students: Student[],
+  teachers: Teacher[],
   onToggle: () => void,
   onSelect: (account: Account) => Promise<void>,
 }
 
 function AccountPicker({
   visible,
-  accounts,
+  students,
+  teachers,
   onToggle,
   onSelect,
 }: Props) {
@@ -58,13 +63,17 @@ function AccountPicker({
         <Dialog.Title>Accounts</Dialog.Title>
         <Dialog.ScrollArea style={{ padding: 0 }}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            {accounts.map((account) => (
+            {[students, teachers].flatMap((a) => a).map((account: Account) => (
               <TouchableRipple
                 key={account.id}
                 onPress={() => onSelect(account)}
               >
                 <View style={styles.account}>
-                  <UserAvatar account={account} style={styles.avatar} />
+                  <UserAvatar
+                    photoURL={account.photoURL}
+                    name={account.name}
+                    style={styles.avatar}
+                  />
                   <View style={{ flexShrink: 1 }}>
                     <Paragraph
                       style={styles.accountName}
@@ -74,9 +83,9 @@ function AccountPicker({
                       {account.name}
                     </Paragraph>
                     <Caption style={styles.accountMeta}>
-                      {account.isTeacher ? 'Teacher' : 'Student'}
+                      {asTeacher(account) ? 'Teacher' : 'Student'}
                       {', '}
-                      {account.school.name}
+                      <SchoolName account={account} />
                     </Caption>
                   </View>
                 </View>

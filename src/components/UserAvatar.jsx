@@ -4,7 +4,6 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar, ActivityIndicator, useTheme } from 'react-native-paper';
 
-import type { Account } from '../types';
 import { getInitials } from '../utils';
 
 const styles = StyleSheet.create({
@@ -17,31 +16,33 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
-  account: Account,
+type Props = {|
+  name: string,
+  photoURL?: string,
   size?: number,
   loading?: boolean,
   style?: any,
-}
+|}
 
 function UserAvatar({
-  account,
+  name,
+  photoURL,
   size = 40,
   loading = false,
   style,
 }: Props) {
   const theme = useTheme();
 
-  const avatar = account.photoURL ? (
+  const avatar = photoURL ? (
     <Avatar.Image
       style={style}
-      source={{ uri: account.photoURL }}
+      source={{ uri: photoURL }}
       size={size}
     />
   ) : (
     <Avatar.Text
       style={style}
-      label={getInitials(account.name)}
+      label={getInitials(name)}
       size={size}
     />
   );

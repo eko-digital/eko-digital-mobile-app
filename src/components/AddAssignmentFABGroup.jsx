@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { FAB } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-import type { AssignmentType } from '../types';
+import type { AssignmentFormat } from '../types';
 
 type Props = {
   navigate: (route: string, options: { [key: string]: any }) => void,
@@ -18,9 +18,10 @@ function AddAssignmentFABGroup({ navigate }: Props) {
     setOpen(state.open);
   }, []);
 
-  const navigateToNewAssignment = useCallback((assignmentType: AssignmentType) => {
-    navigate('NewAssignment', {
-      assignmentType,
+  const navigateToNewAssignment = useCallback((assignmentFormat: AssignmentFormat) => {
+    navigate('NewPost', {
+      postType: 'assignment',
+      postFormat: assignmentFormat,
     });
   }, [navigate]);
 

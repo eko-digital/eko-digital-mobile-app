@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { FAB } from 'react-native-paper';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-import type { LessonType } from '../types';
+import type { LessonFormat } from '../types';
 
 type Props = {
   navigate: (route: string, options: { [key: string]: any }) => void,
@@ -18,9 +18,10 @@ function AddLessonFABGroup({ navigate }: Props) {
     setOpen(state.open);
   }, []);
 
-  const navigateToNewLesson = useCallback((lessonType: LessonType) => {
-    navigate('NewLesson', {
-      lessonType,
+  const navigateToNewLesson = useCallback((lessonFormat: LessonFormat) => {
+    navigate('NewPost', {
+      postType: 'lesson',
+      postFormat: lessonFormat,
     });
   }, [navigate]);
 

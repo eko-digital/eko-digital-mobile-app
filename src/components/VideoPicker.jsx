@@ -6,10 +6,11 @@ import { StyleSheet } from 'react-native';
 
 import type { DocumentPickerResult } from '../types';
 import VideoPlayer from './VideoPlayer';
+import config from '../config';
 
 const styles = StyleSheet.create({
   pickerButton: {
-    padding: 8,
+    padding: config.values.space.small,
   },
 });
 

@@ -57,14 +57,14 @@ type Props = {
 }
 
 function NewPost({ route, navigation }: Props) {
-  const { activeAccount } = useContext(AccountContext);
-  const { postType, postFormat } = route.params;
   const [classId, setClassId] = useState<string | null>(null);
   const [subject, setSubject] = useState<string | null>(null);
   const [file, setFile] = useState<DocumentPickerResult | null>(null);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
+  const { activeAccount } = useContext(AccountContext);
+  const { postType, postFormat } = route.params;
 
   const theme = useTheme();
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
@@ -155,9 +155,11 @@ function NewPost({ route, navigation }: Props) {
           url: uploadURL,
           path: file.uri,
           method: 'POST',
+          type: 'multipart',
+          field: 'file',
           customUploadId: postRef.id,
           headers: {
-            'content-length': file.size.toString(),
+            'content-type': file.type,
           },
           notification: {
             enabled: true,
@@ -176,6 +178,15 @@ function NewPost({ route, navigation }: Props) {
       navigation.goBack();
     } catch (error) {
       setSending(false);
+      Alert.alert(
+        'Oops!',
+        `Something went wrong while saving this ${postType}.`
+          + ' Please try again or contact your school if the issue persists.',
+        [
+          { text: 'OK', style: 'cancel' },
+          { text: 'Retry', onPress: savePost },
+        ],
+      );
       console.error(error);
     }
   }, [

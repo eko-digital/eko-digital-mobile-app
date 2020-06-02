@@ -75,7 +75,7 @@ function StackNavigator() {
         <Stack.Screen
           name="VideoScreen"
           component={VideoScreen}
-          options={({ route }) => ({ title: route.params.lesson.title })}
+          options={({ route }) => ({ title: route.params.post.title })}
         />
         {asTeacher(activeAccount) && (
           <>

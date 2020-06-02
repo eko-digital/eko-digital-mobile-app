@@ -7,6 +7,7 @@ import {
 import { WebView } from 'react-native-webview';
 
 import type { Post } from '../types';
+import ErrorScreen from './ErrorScreen';
 
 const html = `
 <!DOCTYPE html>
@@ -28,9 +29,9 @@ const html = `
       align-items: center;
     }
   </style>
-  <stream src="5d5bc37ffcf54c9b82e996823bffbb81" controls preload autoplay width="100vw" height="100vh"></stream>
+  <stream src="[token]" controls preload autoplay width="100vw" height="100vh"></stream>
   <script data-cfasync="false" defer type="text/javascript"
-    src="https://embed.cloudflarestream.com/embed/r4xu.fla9.latest.js?video=5d5bc37ffcf54c9b82e996823bffbb81">
+    src="https://embed.cloudflarestream.com/embed/r4xu.fla9.latest.js?video=[token]">
   </script>
 </body>
 
@@ -52,7 +53,10 @@ type Props = {
 }
 
 function VideoScreen({ route }: Props) {
-  console.log(route);
+  const { params: { post } } = route;
+  if (!post.videoToken) {
+    return <ErrorScreen description="An unexpected error has occurred while loading video. Please try again later." />;
+  }
 
   return (
     <View style={styles.container}>
@@ -61,7 +65,7 @@ function VideoScreen({ route }: Props) {
         mediaPlaybackRequiresUserAction={false}
         bounces={false}
         originWhitelist={['*']}
-        source={{ html }}
+        source={{ html: html.replace('[token]', post.videoToken) }}
       />
     </View>
   );

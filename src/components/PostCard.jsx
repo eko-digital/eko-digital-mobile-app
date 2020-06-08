@@ -12,8 +12,6 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { Alert, StyleSheet } from 'react-native';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 
 import type { Post, PostType, Account } from '../types';
 import { asTeacher, asStudent, getAttachmentPath } from '../utils';
@@ -22,8 +20,8 @@ import ReadMoreText from './ReadMoreText';
 import PostPDFPreview from './PostPDFPreview';
 import PostImagePreview from './PostImagePreview';
 import config from '../config';
-
-dayjs.extend(relativeTime);
+import prettyTime from '../helpers/prettyTime';
+import MultilineCardTitle from './MultilineCardTitle';
 
 const styles = StyleSheet.create({
   card: {
@@ -76,7 +74,7 @@ function PostCard({ post, postType, activeAccount }: Props) {
     });
   }, [activeAccount.id, isFavourite, post.id, postType]);
 
-  const deleteLesson = useCallback(async () => {
+  const deletePost = useCallback(async () => {
     const { currentUser } = auth();
     if (!currentUser) {
       return;
@@ -93,16 +91,16 @@ function PostCard({ post, postType, activeAccount }: Props) {
       `Delete "${post.title}"?`,
       'Are you sure you want to delete this post. This action can not be undone.',
       [
-        { text: 'Delete', style: 'destructive', onPress: deleteLesson },
+        { text: 'Delete', style: 'destructive', onPress: deletePost },
         { text: 'Cancel', style: 'cancel' },
       ],
     );
-  }, [deleteLesson, post.title]);
+  }, [deletePost, post.title]);
 
   const cancelUpload = useCallback(async () => {
     await Upload.cancelUpload(post.id);
-    await deleteLesson();
-  }, [deleteLesson, post.id]);
+    await deletePost();
+  }, [deletePost, post.id]);
 
   let rippleColor = isFavourite ? theme.colors.placeholder : theme.colors.notification;
   rippleColor = color(rippleColor).alpha(0.3).string();
@@ -148,19 +146,19 @@ function PostCard({ post, postType, activeAccount }: Props) {
     meta.push(post.subject);
   }
   if (post.createdAt) {
-    // eslint-disable-next-line no-underscore-dangle
-    meta.push(dayjs.unix(post.createdAt._seconds).fromNow());
+    meta.push(prettyTime(post.createdAt));
   }
 
   return (
     <Card style={styles.card}>
       {post.type === 'video' && <PostVideoPreview post={post} />}
       {post.type === 'image' && <PostImagePreview post={post} />}
-      <Card.Title
+      <MultilineCardTitle
         title={post.title}
         subtitle={meta.join(' • ')}
         right={menu}
-        subtitleNumberOfLines={2}
+        titleNumberOfLines={4}
+        subtitleNumberOfLines={1}
       />
       {post.description ? (
         <Card.Content>

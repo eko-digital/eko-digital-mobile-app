@@ -8,6 +8,7 @@ import prettyBytes from 'pretty-bytes';
 
 import type { DocumentPickerResult } from '../types';
 import config from '../config';
+import MultilineCardTitle from './MultilineCardTitle';
 
 const styles = StyleSheet.create({
   pickerButton: {
@@ -68,7 +69,12 @@ function PDFPicker({ pdf, onChange }: Props) {
 
   return (
     <Card>
-      <Card.Title title={pdf.name} subtitle={prettyBytes(pdf.size)} left={pdfIcon} />
+      <MultilineCardTitle
+        title={pdf.name}
+        subtitle={prettyBytes(pdf.size)}
+        left={pdfIcon}
+        titleNumberOfLines={4}
+      />
       <Card.Actions>
         <Button onPress={openPicker}>Change file</Button>
       </Card.Actions>

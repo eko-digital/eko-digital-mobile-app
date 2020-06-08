@@ -81,8 +81,33 @@ export type Post = {|
   thumbnail?: string,
   duration?: number,
   status: 'uploading' | 'available' | 'processing-error',
-  createdAt: FirestoreTimestamp,
+  createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
 |}
 
 export type PostType = 'lesson' | 'assignment';
 export type PostFormat = LessonFormat | AssignmentFormat;
+
+export type ForumTopic = {
+  id: string,
+  title: string,
+  description: string,
+  class: string,
+  author: string,
+  replyCount: number,
+  createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
+}
+
+export type ForumReply = {
+  id: string,
+  description: string,
+  topic: string,
+  author: string,
+  createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
+}
+
+export type ForumUser = {
+  id: string,
+  name: string,
+  photoURL: string,
+  isTeacher: boolean,
+}

@@ -16,6 +16,7 @@ import Settings from './Settings';
 import School from './School';
 import FullScreenImage from './FullScreenImage';
 import VideoScreen from './VideoScreen';
+import TopicScreen from './TopicScreen';
 
 const Stack = createStackNavigator();
 
@@ -90,6 +91,11 @@ function StackNavigator() {
           name="NewTopic"
           component={NewTopic}
           options={{ title: 'Add new topic' }}
+        />
+        <Stack.Screen
+          name="TopicScreen"
+          component={TopicScreen}
+          options={({ route }) => ({ title: route.params.topic.title })}
         />
       </>
     ) : (

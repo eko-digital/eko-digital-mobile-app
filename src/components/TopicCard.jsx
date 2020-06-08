@@ -1,5 +1,5 @@
 // @flow
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useContext } from 'react';
 import {
   Card,
   useTheme,
@@ -16,6 +16,9 @@ import type { ForumTopic, ForumUser } from '../types';
 import config from '../config';
 import useDoc from '../hooks/useDoc';
 import ForumItemMeta from './ForumItemMeta';
+import ClassName from './ClassName';
+import { asTeacher } from '../utils';
+import AccountContext from '../contexts/AccountContext';
 
 const styles = StyleSheet.create({
   card: {
@@ -47,6 +50,7 @@ type Props = {
 
 function TopicCard({ topic }: Props) {
   const theme = useTheme();
+  const { activeAccount } = useContext(AccountContext);
   const { navigate } = useNavigation();
 
   const docRef = useMemo(() => firestore().collection('forum-users').doc(topic.author), [topic.author]);
@@ -59,6 +63,41 @@ function TopicCard({ topic }: Props) {
     () => (topic.replyCount > 0 ? topic.replyCount : 0),
     [topic.replyCount],
   );
+
+  const deleteTopic = useCallback(async () => {
+    await firestore().collection('forum-topics').doc(topic.id).delete();
+  }, [topic.id]);
+
+  const actions = useMemo(() => {
+    const teacher = asTeacher(activeAccount);
+    if (!author) {
+      return null;
+    }
+
+    // a teacher can delete their own topics or those created by a student
+    if ((teacher && !author.isTeacher) || (activeAccount && activeAccount.id === topic.author)) {
+      return [{
+        title: 'Delete topic',
+        icon: 'delete',
+        onAction: deleteTopic,
+      }];
+    }
+
+    return null;
+  }, [activeAccount, author, deleteTopic, topic.author]);
+
+  const extraMeta = useMemo(() => {
+    if (!author || !author.isTeacher || !asTeacher(activeAccount)) {
+      return null;
+    }
+
+    return (
+      <ClassName
+        id={topic.class}
+        prefix=" • in "
+      />
+    );
+  }, [activeAccount, author, topic.class]);
 
   const navigateToTopic = useCallback(() => {
     if (!author) {
@@ -75,7 +114,12 @@ function TopicCard({ topic }: Props) {
     <Card style={styles.card}>
       <TouchableRipple style={styles.button} onPress={navigateToTopic}>
         <Card.Content>
-          <ForumItemMeta timestamp={topic.createdAt} author={author} />
+          <ForumItemMeta
+            timestamp={topic.createdAt}
+            author={author}
+            actions={actions}
+            extra={extraMeta}
+          />
           <Title style={styles.title}>{topic.title}</Title>
           <View style={styles.replies}>
             <MaterialCommunityIcons

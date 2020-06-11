@@ -4,6 +4,7 @@ import color from 'color';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { useTheme, Portal } from 'react-native-paper';
 import { useIsFocused, RouteProp, useNavigation } from '@react-navigation/native';
+import { Platform } from 'react-native';
 
 import overlay from '../overlay';
 import Lessons from './Lessons';
@@ -49,6 +50,9 @@ function BottomTabs({ route }: Props) {
         backBehavior="initialRoute"
         activeColor={theme.colors.primary}
         inactiveColor={inactiveTabColor}
+        // disable scene animation on android until following bug is fixed
+        // https://github.com/facebook/react-native/issues/23090#issuecomment-642279615
+        sceneAnimationEnabled={Platform.OS !== 'android'}
       >
         <Tab.Screen
           name="Lessons"

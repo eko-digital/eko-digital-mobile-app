@@ -22,9 +22,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PreferencesContext from '../contexts/PreferencesContext';
 import AccountContext from '../contexts/AccountContext';
 import UserAvatar from './UserAvatar';
-import SchoolName from './SchoolName';
-import { asTeacher, asStudent } from '../utils';
+import InstituteName from './InstituteName';
+import { asTeacher, asStudent, capitalize } from '../utils';
 import config from '../config';
+import useInstitute from '../hooks/useInstitute';
 
 const styles = StyleSheet.create({
   drawerContent: {
@@ -66,6 +67,7 @@ function DrawerContent(props: Props) {
   const paperTheme = useTheme();
   const { activeAccount, switchAccount } = React.useContext(AccountContext);
   const { theme, toggleTheme } = React.useContext(PreferencesContext);
+  const { institute } = useInstitute(activeAccount);
 
   const { progress, navigation } = props;
 
@@ -81,8 +83,8 @@ function DrawerContent(props: Props) {
     navigation.navigate('Settings');
   }, [navigation]);
 
-  const openSchool = useCallback(() => {
-    navigation.navigate('School');
+  const openInstitute = useCallback(() => {
+    navigation.navigate('Institute');
   }, [navigation]);
 
   const translateX = Animated.interpolate(progress, {
@@ -136,7 +138,7 @@ function DrawerContent(props: Props) {
                 <Caption style={styles.caption}>
                   {asTeacher(activeAccount) ? 'Teacher' : 'Student'}
                   {', '}
-                  <SchoolName account={activeAccount} />
+                  <InstituteName account={activeAccount} />
                 </Caption>
               </View>
             </View>
@@ -182,8 +184,8 @@ function DrawerContent(props: Props) {
                 size={size}
               />
             )}
-            label="School"
-            onPress={openSchool}
+            label={capitalize(institute?.type || 'Institute')}
+            onPress={openInstitute}
           />
         </Drawer.Section>
         <Drawer.Section title="Preferences">

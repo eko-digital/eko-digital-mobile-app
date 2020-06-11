@@ -43,14 +43,14 @@ function AccountNotFound() {
       title="No account found!"
       description={
         `We could not find any account linked to ${emailOrMobileNumber}`
-          + ' in any of the school\'s database.'
+          + ' in any of the educational institution\'s database.'
           + '\n\nPlease login with the same email'
           + ' or phone number you received the invitation on.'
-          + ' If this error persists, please contact your school.'
+          + ' If this error persists, please contact your school/college/institute.'
       }
       extra={(
         <>
-          <Paragraph>If you are a school then sign up at</Paragraph>
+          <Paragraph>If you are a school, college or institute then sign up at</Paragraph>
           <Button
             mode="text"
             onClick={openEkoDigital}

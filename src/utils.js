@@ -8,7 +8,7 @@ import type {
   Account,
   Teacher,
   Student,
-  SchoolClass,
+  InstituteClass,
   TeacherClassSubject,
 } from './types';
 
@@ -45,7 +45,7 @@ export function asStudent(account: Account | null): Student | null {
 
 export function getTeacherClassSubjects(
   teacher: Teacher | null,
-  classes: SchoolClass[],
+  classes: InstituteClass[],
 ): TeacherClassSubject[] {
   if (teacher && classes) {
     return teacher.classes.map((tClass) => {
@@ -70,4 +70,11 @@ export function getAttachmentPath(
   docId: string,
 ) {
   return `users/${user.uid}/teachers/${account.id}/${collection}/${docId}`;
+}
+
+export function capitalize(str: string) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

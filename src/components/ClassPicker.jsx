@@ -3,7 +3,7 @@ import React, { useMemo, useCallback } from 'react';
 import SelectInput from './SelectInput';
 
 import type { Account } from '../types';
-import useSchoolClasses from '../hooks/useSchoolClasses';
+import useInstituteClasses from '../hooks/useInstituteClasses';
 import { asTeacher } from '../utils';
 
 type Props = {
@@ -17,7 +17,7 @@ function ClassPicker({
   account,
   onChange,
 }: Props) {
-  const { classes } = useSchoolClasses(account);
+  const { classes } = useInstituteClasses(account);
 
   const handleChange = useCallback((selection: string) => {
     onChange(selection);

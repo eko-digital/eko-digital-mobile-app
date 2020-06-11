@@ -39,7 +39,7 @@ function Posts({ postType }: Props) {
 
     if (asTeacher(activeAccount)) {
       return firestore().collection(collection)
-        .where('school', '==', activeAccount.school)
+        .where('institute', '==', activeAccount.institute)
         .where('teacher', '==', activeAccount.id)
         .orderBy('createdAt', 'desc');
     }

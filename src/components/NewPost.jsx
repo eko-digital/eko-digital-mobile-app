@@ -32,6 +32,7 @@ import AccountContext from '../contexts/AccountContext';
 import { getCallableFunction, getAttachmentPath } from '../utils';
 import ClassSubjectPicker from './ClassSubjectPicker';
 import config from '../config';
+import useInstitute from '../hooks/useInstitute';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,6 +66,7 @@ function NewPost({ route, navigation }: Props) {
   const [sending, setSending] = useState<boolean>(false);
   const { activeAccount } = useContext(AccountContext);
   const { postType, postFormat } = route.params;
+  const { institute } = useInstitute(activeAccount);
 
   const theme = useTheme();
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
@@ -114,7 +116,7 @@ function NewPost({ route, navigation }: Props) {
         description,
         class: classId,
         teacher: activeAccount.id,
-        school: activeAccount.school,
+        institute: activeAccount.institute,
         status: postFormat === 'video' ? 'uploading' : 'available',
         createdAt: firestore.FieldValue.serverTimestamp(),
       };
@@ -181,7 +183,7 @@ function NewPost({ route, navigation }: Props) {
       Alert.alert(
         'Oops!',
         `Something went wrong while saving this ${postType}.`
-          + ' Please try again or contact your school if the issue persists.',
+          + ` Please try again or contact your ${institute?.type || 'institute'} if the issue persists.`,
         [
           { text: 'OK', style: 'cancel' },
           { text: 'Retry', onPress: savePost },
@@ -190,7 +192,6 @@ function NewPost({ route, navigation }: Props) {
       console.error(error);
     }
   }, [
-    postType,
     postFormat,
     file,
     classId,
@@ -199,7 +200,9 @@ function NewPost({ route, navigation }: Props) {
     description,
     subject,
     collection,
+    postType,
     navigation,
+    institute,
   ]);
 
   useLayoutEffect(() => {

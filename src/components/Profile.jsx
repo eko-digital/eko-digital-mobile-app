@@ -13,12 +13,14 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
-import type { SchoolClass, TeacherClassSubject } from '../types';
+import type { InstituteClass, TeacherClassSubject } from '../types';
 import UserAvatar from './UserAvatar';
 import AccountContext from '../contexts/AccountContext';
-import { asTeacher, asStudent, getTeacherClassSubjects } from '../utils';
-import useSchool from '../hooks/useSchool';
-import useSchoolClasses from '../hooks/useSchoolClasses';
+import {
+  asTeacher, asStudent, getTeacherClassSubjects, capitalize,
+} from '../utils';
+import useInstitute from '../hooks/useInstitute';
+import useInstituteClasses from '../hooks/useInstituteClasses';
 import config from '../config';
 
 const styles = StyleSheet.create({
@@ -49,8 +51,8 @@ function Profile() {
   const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
   const { currentUser } = auth();
-  const { school } = useSchool(account);
-  const { classes } = useSchoolClasses(account);
+  const { institute } = useInstitute(account);
+  const { classes } = useInstituteClasses(account);
 
   const uploadImage = useCallback(async (localImagePath: string) => {
     if (!account) {
@@ -97,7 +99,7 @@ function Profile() {
     }
   }, [theme.colors.primary, uploadImage]);
 
-  const studentClass: SchoolClass | null = useMemo(() => {
+  const studentClass: InstituteClass | null = useMemo(() => {
     const student = asStudent(account);
     if (student && classes) {
       return classes.find((c) => c.id === student.class) || null;
@@ -166,8 +168,8 @@ function Profile() {
           />
         )}
         <List.Item
-          title="School"
-          description={school ? school.name : '...'}
+          title={capitalize(institute?.type || 'institute')}
+          description={institute ? institute.name : '...'}
           // eslint-disable-next-line react/jsx-props-no-spreading
           left={(props) => <List.Icon {...props} icon="bank-outline" />}
         />

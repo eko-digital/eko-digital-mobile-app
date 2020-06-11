@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { asTeacher, asStudent } from '../utils';
+import { asTeacher, asStudent, capitalize } from '../utils';
 import Header from './Header';
 import BottomTabs from './BottomTabs';
 import NewPost from './NewPost';
@@ -13,15 +13,17 @@ import AccountLoadingError from './AccountLoadingError';
 import Profile from './Profile';
 import Favourites from './Favourites';
 import Settings from './Settings';
-import School from './School';
+import Institute from './Institute';
 import FullScreenImage from './FullScreenImage';
 import VideoScreen from './VideoScreen';
 import TopicScreen from './TopicScreen';
+import useInstitute from '../hooks/useInstitute';
 
 const Stack = createStackNavigator();
 
 function StackNavigator() {
   const { activeAccount, loadingError } = useContext(AccountContext);
+  const { institute } = useInstitute(activeAccount);
 
   let screens = null;
 
@@ -64,9 +66,9 @@ function StackNavigator() {
           options={{ title: 'Settings' }}
         />
         <Stack.Screen
-          name="School"
-          component={School}
-          options={{ title: 'School' }}
+          name="Institute"
+          component={Institute}
+          options={{ title: capitalize(institute?.type || 'institute') }}
         />
         <Stack.Screen
           name="FullScreenImage"

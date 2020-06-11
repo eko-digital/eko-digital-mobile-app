@@ -3,22 +3,25 @@ export type FirestoreTimestamp = {
   _seconds: number,
 }
 
+export type InstituteType = 'school' | 'college' | 'university' | 'institute';
+
 export type TeacherClassSubject = {
   id: string,
   name: string,
   subject: string,
 }
 
-export type School = {
+export type Institute = {
   id: string,
   name: string,
   logo?: string,
   description?: string,
   email?: string,
   phoneNumber?: string,
+  type: InstituteType,
 }
 
-export type SchoolClass = {|
+export type InstituteClass = {|
   id: string,
   name: string,
   subjects: string[],
@@ -29,7 +32,7 @@ export type Student = {|
   name: string,
   phoneNumber?: string,
   email?: string,
-  school: string,
+  institute: string,
   class: string,
   photoURL?: string,
   studentID?: string,
@@ -44,7 +47,7 @@ export type Teacher = {|
   name: string,
   phoneNumber?: string,
   email?: string,
-  school: string,
+  institute: string,
   classes: Array<{
     id: string,
     subject: string,
@@ -72,7 +75,7 @@ export type Post = {|
   class: string,
   subject?: string,
   teacher: string,
-  school: string,
+  institute: string,
   attachment?: string,
   attachmentName?: string,
   attachmentSize?: number,

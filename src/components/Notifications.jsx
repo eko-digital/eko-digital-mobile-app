@@ -8,8 +8,8 @@ function Notifications() {
   return (
     <EmptyScreen
       illustration={noMessages}
-      title="No notifications, yet!"
-      description="When your school sends you notifications they will appear here."
+      title="Notifications"
+      description="Stay notified about new updates."
     />
   );
 }

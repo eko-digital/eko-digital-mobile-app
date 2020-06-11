@@ -7,24 +7,24 @@ import {
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import type { School, Account } from '../types';
+import type { Institute, Account } from '../types';
 import { getCallableFunction, asTeacher } from '../utils';
 
 type Response = {|
   loading: boolean,
   loadingError: boolean,
-  school: School | null,
+  institute: Institute | null,
   retry: () => Promise<void>,
 |}
 
-function useSchool(account: Account | null): Response {
+function useInstitute(account: Account | null): Response {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingError, setLoadingError] = useState<boolean>(false);
-  const [school, setSchool] = useState<School | null>(null);
+  const [institute, setInstitute] = useState<Institute | null>(null);
 
-  const cacheKey = useMemo(() => (account ? `school_data_${account.school}` : 'school_data'), [account]);
+  const cacheKey = useMemo(() => (account ? `institute_data_${account.institute}` : 'institute_data'), [account]);
 
-  const fetchSchool = useCallback(async () => {
+  const fetchInstitute = useCallback(async () => {
     if (!account) {
       return;
     }
@@ -38,27 +38,27 @@ function useSchool(account: Account | null): Response {
       if (cacheString) {
         const cacheData = JSON.parse(cacheString);
         if (
-          cacheData.school
+          cacheData.institute
           && cacheData.lastCached
           && cacheData.lastCached > (Date.now() - 24 * 60 * 60 * 1000)
         ) {
           fetchFromServer = false;
-          setSchool(cacheData.school);
+          setInstitute(cacheData.institute);
           setLoading(false);
         }
       }
 
       if (fetchFromServer) {
-        const getSchoolData = await getCallableFunction('getSchoolData');
-        const response = await getSchoolData({
-          id: account.school,
+        const getInstituteData = await getCallableFunction('getInstituteData');
+        const response = await getInstituteData({
+          id: account.institute,
           userId: account.id,
           isTeacher: Boolean(asTeacher(account)),
         });
-        setSchool(response.data);
+        setInstitute(response.data);
         await AsyncStorage.setItem(cacheKey, JSON.stringify({
           lastCached: Date.now(),
-          school: response.data,
+          institute: response.data,
         }));
         setLoading(false);
       }
@@ -69,15 +69,15 @@ function useSchool(account: Account | null): Response {
   }, [account, cacheKey]);
 
   useEffect(() => {
-    fetchSchool();
-  }, [fetchSchool]);
+    fetchInstitute();
+  }, [fetchInstitute]);
 
   return {
     loading,
     loadingError,
-    school,
-    retry: fetchSchool,
+    institute,
+    retry: fetchInstitute,
   };
 }
 
-export default useSchool;
+export default useInstitute;

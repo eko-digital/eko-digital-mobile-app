@@ -11,7 +11,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 
 import type { Student, Teacher, Account } from '../types';
 import UserAvatar from './UserAvatar';
-import SchoolName from './SchoolName';
+import InstituteName from './InstituteName';
 import { asTeacher } from '../utils';
 import config from '../config';
 
@@ -85,7 +85,7 @@ function AccountPicker({
                     <Caption style={styles.accountMeta}>
                       {asTeacher(account) ? 'Teacher' : 'Student'}
                       {', '}
-                      <SchoolName account={account} />
+                      <InstituteName account={account} />
                     </Caption>
                   </View>
                 </View>

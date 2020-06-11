@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import SelectInput from './SelectInput';
 
 import type { Account, TeacherClassSubject } from '../types';
-import useSchoolClasses from '../hooks/useSchoolClasses';
+import useInstituteClasses from '../hooks/useInstituteClasses';
 import { asTeacher, getTeacherClassSubjects } from '../utils';
 
 type Props = {
@@ -19,7 +19,7 @@ function ClassSubjectPicker({
 }: Props) {
   const [classSubject, setClassSubject] = useState<string | null>(null);
 
-  const { classes } = useSchoolClasses(account);
+  const { classes } = useInstituteClasses(account);
 
   const handleChange = useCallback((selection: string) => {
     setClassSubject(selection);

@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import firestore from '@react-native-firebase/firestore';
 
-import type { SchoolClass } from '../types';
+import type { InstituteClass } from '../types';
 import useDoc from '../hooks/useDoc';
 
 type Props = {
@@ -14,9 +14,9 @@ type Props = {
 function ClassName({ id, prefix = '', suffix = '' }: Props) {
   const ref = useMemo(() => firestore().collection('classes').doc(id), [id]);
 
-  const { data: schoolClass } = useDoc<SchoolClass>(ref);
+  const { data: instituteClass } = useDoc<InstituteClass>(ref);
 
-  return schoolClass ? `${prefix}${schoolClass.name}${suffix}` : null;
+  return instituteClass ? `${prefix}${instituteClass.name}${suffix}` : null;
 }
 
 export default ClassName;

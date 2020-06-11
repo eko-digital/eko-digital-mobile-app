@@ -11,7 +11,7 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import { DefaultTheme } from '@react-navigation/native';
 
 import AccountContext from '../contexts/AccountContext';
-import useSchool from '../hooks/useSchool';
+import useInstitute from '../hooks/useInstitute';
 import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import ErrorScreen from './ErrorScreen';
 import config from '../config';
@@ -36,25 +36,25 @@ const styles = StyleSheet.create({
   },
 });
 
-function School() {
+function Institute() {
   const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
 
   const {
     loading,
     loadingError,
-    school,
+    institute,
     retry,
-  } = useSchool(account);
+  } = useInstitute(account);
 
   if (loading) {
     return <FullScreenActivityIndicator />;
   }
 
-  if (loadingError || !school) {
+  if (loadingError || !institute) {
     return (
       <ErrorScreen
-        description="Something went wrong while loading school data."
+        description="Oops! Something went wrong."
         onRetry={retry}
       />
     );
@@ -62,33 +62,33 @@ function School() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {school.logo && (
+      {institute.logo && (
         <View style={[styles.logoWrap, { borderRadius: theme.roundness }]}>
           <AutoHeightImage
             width={144}
-            source={{ uri: school.logo }}
+            source={{ uri: institute.logo }}
           />
         </View>
       )}
 
-      <Title>{school.name}</Title>
-      <Paragraph style={styles.description}>{school.description}</Paragraph>
+      <Title>{institute.name}</Title>
+      <Paragraph style={styles.description}>{institute.description}</Paragraph>
 
-      {(school.email || school.phoneNumber) && (
+      {(institute.email || institute.phoneNumber) && (
         <List.Section style={styles.contactSection}>
           <List.Subheader>Contact Details</List.Subheader>
-          {school.email && (
+          {institute.email && (
             <List.Item
               title="Email"
-              description={school.email}
+              description={institute.email}
               // eslint-disable-next-line react/jsx-props-no-spreading
               left={(props) => <List.Icon {...props} icon="at" />}
             />
           )}
-          {school.phoneNumber && (
+          {institute.phoneNumber && (
             <List.Item
               title="Phone number"
-              description={school.phoneNumber}
+              description={institute.phoneNumber}
               // eslint-disable-next-line react/jsx-props-no-spreading
               left={(props) => <List.Icon {...props} icon="phone" />}
             />
@@ -99,4 +99,4 @@ function School() {
   );
 }
 
-export default School;
+export default Institute;

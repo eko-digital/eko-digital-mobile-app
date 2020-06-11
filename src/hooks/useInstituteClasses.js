@@ -2,23 +2,23 @@
 import firestore from '@react-native-firebase/firestore';
 
 import { useMemo } from 'react';
-import type { Account, SchoolClass } from '../types';
+import type { Account, InstituteClass } from '../types';
 import useDocsQuery from './useDocsQuery';
 
 type Response = {
   loading: boolean,
-  classes: SchoolClass[],
+  classes: InstituteClass[],
 }
 
-function useSchoolClasses(account: Account | null): Response {
+function useInstituteClasses(account: Account | null): Response {
   const query = useMemo(() => (account
     ? firestore().collection('classes')
-      .where('school', '==', account.school)
+      .where('institute', '==', account.institute)
     : null), [account]);
 
-  const { loading, docs: classes } = useDocsQuery<SchoolClass>(query);
+  const { loading, docs: classes } = useDocsQuery<InstituteClass>(query);
 
   return { loading, classes };
 }
 
-export default useSchoolClasses;
+export default useInstituteClasses;

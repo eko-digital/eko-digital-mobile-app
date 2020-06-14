@@ -27,7 +27,7 @@ function AccountNotFound() {
     }
   }, []);
 
-  const emailOrMobileNumber = useMemo(() => {
+  const emailOrPhoneNumber = useMemo(() => {
     const { currentUser } = auth();
 
     if (currentUser) {
@@ -42,7 +42,7 @@ function AccountNotFound() {
       illustration={emptyState}
       title="No account found!"
       description={
-        `We could not find any account linked to ${emailOrMobileNumber}`
+        `We could not find any account linked to ${emailOrPhoneNumber}`
           + ' in any of the educational institution\'s database.'
           + '\n\nPlease login with the same email'
           + ' or phone number you received the invitation on.'

@@ -37,7 +37,7 @@ function Main() {
     if (!currentUser) {
       return null;
     } if (currentUser.phoneNumber) {
-      return firestore().collection('students').where('mobile', '==', currentUser.phoneNumber);
+      return firestore().collection('students').where('phoneNumber', '==', currentUser.phoneNumber);
     } if (currentUser.email && currentUser.emailVerified) {
       return firestore().collection('students').where('email', '==', currentUser.email);
     }
@@ -49,7 +49,7 @@ function Main() {
     if (!currentUser) {
       return null;
     } if (currentUser.phoneNumber) {
-      return firestore().collection('teachers').where('mobile', '==', currentUser.phoneNumber);
+      return firestore().collection('teachers').where('phoneNumber', '==', currentUser.phoneNumber);
     } if (currentUser.email && currentUser.emailVerified) {
       return firestore().collection('teachers').where('email', '==', currentUser.email);
     }

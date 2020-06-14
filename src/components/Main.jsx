@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 
 function Main() {
   const [initializing, setInitializing] = useState<boolean>(true);
+  const [emailVerificationPending, setEmailVerificationPending] = useState<boolean>(false);
   const [showPicker, setShowPicker] = useState<boolean>(false);
   const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
 
@@ -40,6 +41,8 @@ function Main() {
       return firestore().collection('students').where('phoneNumber', '==', currentUser.phoneNumber);
     } if (currentUser.email && currentUser.emailVerified) {
       return firestore().collection('students').where('email', '==', currentUser.email);
+    } if (currentUser.email && !currentUser.emailVerified) {
+      setEmailVerificationPending(true);
     }
 
     return null;
@@ -115,7 +118,7 @@ function Main() {
 
   const activeAccount = useMemo(() => getActiveAccount(), [getActiveAccount]);
 
-  if (loading || initializing) {
+  if ((loading || initializing) && !emailVerificationPending) {
     return (
       <View style={styles.container}>
         <ActivityIndicator animating />

@@ -16,6 +16,7 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { Provider as PaperProvider } from 'react-native-paper';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 import RNFirebaseAuthUI from './RNFirebaseAuthUI';
 import Main from './components/Main';
@@ -32,9 +33,21 @@ function App() {
     setTheme(colorScheme === 'dark' ? 'dark' : 'light');
   }, [colorScheme]);
 
+  const handleDynamicLink = useCallback(async (link: { url: string } | null) => {
+    const { currentUser } = auth();
+    if (link && link.url === config.emailVerificationContinueURL && currentUser) {
+      await currentUser.reload();
+      setUser(auth().currentUser);
+    }
+  }, []);
+
   useEffect(() => {
     loadSavedThemePreference();
-  }, [loadSavedThemePreference]);
+    // dynamic links
+    dynamicLinks().getInitialLink().then(handleDynamicLink);
+    const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+    return () => unsubscribe;
+  }, [handleDynamicLink, loadSavedThemePreference]);
 
   const toggleTheme = useCallback(() => {
     setTheme((activeTheme) => (activeTheme === 'light' ? 'dark' : 'light'));

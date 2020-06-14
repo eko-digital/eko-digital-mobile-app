@@ -1,6 +1,7 @@
 // @flow
 import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import auth from '@react-native-firebase/auth';
 
 import { asTeacher, asStudent, capitalize } from '../utils';
 import Header from './Header';
@@ -18,12 +19,15 @@ import FullScreenImage from './FullScreenImage';
 import VideoScreen from './VideoScreen';
 import TopicScreen from './TopicScreen';
 import useInstitute from '../hooks/useInstitute';
+import VerifyEmail from './VerifyEmail';
 
 const Stack = createStackNavigator();
 
 function StackNavigator() {
   const { activeAccount, loadingError } = useContext(AccountContext);
   const { institute } = useInstitute(activeAccount);
+
+  const authUser = auth().currentUser;
 
   let screens = null;
 
@@ -32,6 +36,14 @@ function StackNavigator() {
       <Stack.Screen
         name="AccountLoadingError"
         component={AccountLoadingError}
+        options={{ title: 'Eko Digital' }}
+      />
+    );
+  } else if (authUser.email && !authUser.emailVerified) {
+    screens = (
+      <Stack.Screen
+        name="VerifyEmail"
+        component={VerifyEmail}
         options={{ title: 'Eko Digital' }}
       />
     );

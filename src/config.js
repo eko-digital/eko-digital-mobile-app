@@ -2,6 +2,7 @@
 import { DefaultTheme, DarkTheme } from 'react-native-paper';
 
 const config = {
+  emailVerificationContinueURL: 'https://app.eko.digital/u9DC',
   themes: {
     DefaultTheme: {
       ...DefaultTheme,

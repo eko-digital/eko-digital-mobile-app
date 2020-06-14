@@ -62,7 +62,10 @@ function useDocsQuery<Entity>(query: FirebaseFirestoreTypes.Query): Results<Enti
       setDocs(items);
       setLoading(false);
     }, (error) => {
-      console.error(error);
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
       setLoadingError(true);
       setLoading(false);
     });

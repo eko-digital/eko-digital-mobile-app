@@ -5,26 +5,37 @@ export type FirestoreTimestamp = {
 
 export type InstituteType = 'school' | 'college' | 'university' | 'institute';
 
-export type TeacherClassSubject = {
+export type Institute = {|
   id: string,
   name: string,
-  subject: string,
-}
-
-export type Institute = {
-  id: string,
-  name: string,
-  logo?: string,
-  description?: string,
-  email?: string,
+  logo: string,
+  description: string,
+  email: string,
   phoneNumber?: string,
   type: InstituteType,
-}
+  i18n: {
+    classSingular: string,
+    classPlural: string,
+    courseSingular: string,
+    coursePlural: string,
+  },
+|};
 
-export type InstituteClass = {|
+export type Klass = {|
   id: string,
   name: string,
-  subjects: string[],
+  institute: string,
+  createdAt: FirestoreTimestamp,
+|};
+
+export type Course = {|
+  id: string,
+  name: string,
+  description?: string,
+  thumbnail?: string | null,
+  class: string,
+  institute: string,
+  createdAt: FirestoreTimestamp,
 |};
 
 export type Student = {|
@@ -34,12 +45,14 @@ export type Student = {|
   email?: string,
   institute: string,
   class: string,
+  courses?: string[],
   photoURL?: string,
   studentID?: string,
   father?: string,
   mother?: string,
   favoriteLessons?: string[],
   favoriteAssignments?: string[],
+  isTeacher: false,
 |};
 
 export type Teacher = {|
@@ -48,11 +61,9 @@ export type Teacher = {|
   phoneNumber?: string,
   email?: string,
   institute: string,
-  classes: Array<{
-    id: string,
-    subject: string,
-  }>,
+  courses?: string[],
   photoURL?: string,
+  isTeacher: true,
 |};
 
 export type Account = Student | Teacher;
@@ -72,8 +83,7 @@ export type Post = {|
   type: LessonFormat,
   title: string,
   description?: string,
-  class: string,
-  subject?: string,
+  course?: string,
   teacher: string,
   institute: string,
   attachment?: string,
@@ -94,7 +104,7 @@ export type ForumTopic = {
   id: string,
   title: string,
   description: string,
-  class: string,
+  course?: string,
   author: string,
   replyCount: number,
   createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore

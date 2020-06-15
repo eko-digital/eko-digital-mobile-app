@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Portal,
   Dialog,
@@ -12,7 +12,6 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import type { Student, Teacher, Account } from '../types';
 import UserAvatar from './UserAvatar';
 import InstituteName from './InstituteName';
-import { asTeacher } from '../utils';
 import config from '../config';
 
 const styles = StyleSheet.create({
@@ -54,6 +53,35 @@ function AccountPicker({
   onToggle,
   onSelect,
 }: Props) {
+  const renderAccount = useCallback((account: Account, isTeacher: boolean) => (
+    <TouchableRipple
+      key={account.id}
+      onPress={() => onSelect(account)}
+    >
+      <View style={styles.account}>
+        <UserAvatar
+          photoURL={account.photoURL}
+          name={account.name}
+          style={styles.avatar}
+        />
+        <View style={{ flexShrink: 1 }}>
+          <Paragraph
+            style={styles.accountName}
+            numberOfLines={1}
+            ellipsizeMode="middle"
+          >
+            {account.name}
+          </Paragraph>
+          <Caption style={styles.accountMeta}>
+            {isTeacher ? 'Teacher' : 'Student'}
+            {', '}
+            <InstituteName instituteId={account.institute} />
+          </Caption>
+        </View>
+      </View>
+    </TouchableRipple>
+  ), [onSelect]);
+
   return (
     <Portal>
       <Dialog
@@ -63,34 +91,8 @@ function AccountPicker({
         <Dialog.Title>Accounts</Dialog.Title>
         <Dialog.ScrollArea style={{ padding: 0 }}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
-            {[students, teachers].flatMap((a) => a).map((account: Account) => (
-              <TouchableRipple
-                key={account.id}
-                onPress={() => onSelect(account)}
-              >
-                <View style={styles.account}>
-                  <UserAvatar
-                    photoURL={account.photoURL}
-                    name={account.name}
-                    style={styles.avatar}
-                  />
-                  <View style={{ flexShrink: 1 }}>
-                    <Paragraph
-                      style={styles.accountName}
-                      numberOfLines={1}
-                      ellipsizeMode="middle"
-                    >
-                      {account.name}
-                    </Paragraph>
-                    <Caption style={styles.accountMeta}>
-                      {asTeacher(account) ? 'Teacher' : 'Student'}
-                      {', '}
-                      <InstituteName account={account} />
-                    </Caption>
-                  </View>
-                </View>
-              </TouchableRipple>
-            ))}
+            {students.map((account) => renderAccount(account, false))}
+            {teachers.map((account) => renderAccount(account, true))}
           </ScrollView>
         </Dialog.ScrollArea>
       </Dialog>

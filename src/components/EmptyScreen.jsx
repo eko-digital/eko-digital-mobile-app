@@ -26,7 +26,6 @@ type Props = {
   title: string,
   description: string | React.Node,
   illustration: any,
-  // eslint-disable-next-line react/require-default-props
   extra?: React.Node,
 }
 

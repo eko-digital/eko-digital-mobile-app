@@ -13,7 +13,6 @@ import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import ErrorScreen from './ErrorScreen';
 import OfflineScreen from './OfflineScreen';
 import PostCard from './PostCard';
-import { asTeacher, asStudent } from '../utils';
 import config from '../config';
 
 const styles = StyleSheet.create({
@@ -30,28 +29,25 @@ function Posts({ postType }: Props) {
   const { activeAccount } = useContext(AccountContext);
 
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
-  const isTeacher = Boolean(asTeacher(activeAccount));
 
   const query = useMemo(() => {
     if (!activeAccount) {
       return null;
     }
 
-    if (asTeacher(activeAccount)) {
+    if (activeAccount?.isTeacher) {
       return firestore().collection(collection)
         .where('institute', '==', activeAccount.institute)
         .where('teacher', '==', activeAccount.id)
         .orderBy('createdAt', 'desc');
     }
 
-    const student = asStudent(activeAccount);
-
-    if (!student) {
+    if (!activeAccount || activeAccount.isTeacher) {
       return null;
     }
 
     return firestore().collection(collection)
-      .where('class', '==', student.class)
+      .where('course', 'in', activeAccount.courses)
       .where('status', '==', 'available')
       .orderBy('createdAt', 'desc');
   }, [activeAccount, collection]);
@@ -90,7 +86,7 @@ function Posts({ postType }: Props) {
         illustration={postType === 'lesson' ? noLessons : noAssignments}
         title={`No ${collection}, yet!`}
         description={
-          asTeacher(activeAccount)
+          activeAccount?.isTeacher
             ? `You haven't added any ${collection} yet. Add one using the big + button at the bottom right corner.`
             : `Your ${collection} will appear here when your teachers add them. Stay tuned.`
         }
@@ -102,7 +98,7 @@ function Posts({ postType }: Props) {
     <FlatList
       contentContainerStyle={[
         styles.container,
-        isTeacher ? { paddingBottom: 100 } : null,
+        activeAccount?.isTeacher ? { paddingBottom: 100 } : null,
       ]}
       data={posts}
       renderItem={({ item }) => (

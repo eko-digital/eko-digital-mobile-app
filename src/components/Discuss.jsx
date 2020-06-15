@@ -8,7 +8,6 @@ import config from '../config';
 import EmptyScreen from './EmptyScreen';
 import AccountContext from '../contexts/AccountContext';
 import discuss from '../images/discuss.png';
-import { asTeacher, asStudent } from '../utils';
 import useDocsQuery from '../hooks/useDocsQuery';
 import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import OfflineScreen from './OfflineScreen';
@@ -30,22 +29,15 @@ function Discuss() {
       return null;
     }
 
-    const teacher = asTeacher(activeAccount);
-    const student = asStudent(activeAccount);
-
-    if (teacher) {
+    if (activeAccount.isTeacher) {
       return firestore().collection('forum-topics')
-        .where('class', 'in', teacher.classes.map(({ id }) => id))
+        .where('class', 'in', activeAccount.courses)
         .orderBy('createdAt', 'desc');
     }
 
-    if (student) {
-      return firestore().collection('forum-topics')
-        .where('class', '==', student.class)
-        .orderBy('createdAt', 'desc');
-    }
-
-    return null;
+    return firestore().collection('forum-topics')
+      .where('class', '==', activeAccount.class)
+      .orderBy('createdAt', 'desc');
   }, [activeAccount]);
 
   const {
@@ -86,7 +78,7 @@ function Discuss() {
         illustration={discuss}
         title="Start discussion"
         description={
-          activeAccount && asTeacher(activeAccount)
+          activeAccount.isTeacher
             ? 'Create a new topic to start discussion.'
             + ' Your students and fellow teachers can view and comment on your topic.'
             : 'Create a new topic to start discussion.'

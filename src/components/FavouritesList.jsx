@@ -14,7 +14,6 @@ import type { Post } from '../types';
 import EmptyScreen from './EmptyScreen';
 import waiting from '../images/waiting.png';
 import AccountContext from '../contexts/AccountContext';
-import { asStudent } from '../utils';
 import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import ErrorScreen from './ErrorScreen';
 import OfflineScreen from './OfflineScreen';
@@ -40,16 +39,16 @@ function FavouritesList({ collection }: Props) {
   const netInfo = useNetInfo();
 
   const fetchFavorites = useCallback(async () => {
-    const student = asStudent(activeAccount);
-    if (!student) {
+    if (!activeAccount || activeAccount.isTeacher) {
       return;
     }
+
     setLoading(true);
     setLoadingError(false);
 
     const favIds = collection === 'lessons'
-      ? student.favoriteLessons
-      : student.favoriteAssignments;
+      ? activeAccount.favoriteLessons
+      : activeAccount.favoriteAssignments;
 
     if (favIds && favIds.length > 0) {
       try {
@@ -62,7 +61,10 @@ function FavouritesList({ collection }: Props) {
         setFavorites(docs);
       } catch (error) {
         setLoadingError(true);
-        console.error(error);
+        if (__DEV__) {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
       }
     }
     setLoading(false);

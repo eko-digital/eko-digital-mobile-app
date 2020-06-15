@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 // @flow
 import * as React from 'react';
 import {

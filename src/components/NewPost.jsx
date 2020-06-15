@@ -28,11 +28,11 @@ import type {
 import ImagePicker from './ImagePicker';
 import VideoPicker from './VideoPicker';
 import PDFPicker from './PDFPicker';
+import SelectInput from './SelectInput';
 import AccountContext from '../contexts/AccountContext';
-import { getCallableFunction, getAttachmentPath } from '../utils';
-import ClassSubjectPicker from './ClassSubjectPicker';
+import { getCallableFunction, getAttachmentPath, capitalize } from '../utils';
 import config from '../config';
-import useInstitute from '../hooks/useInstitute';
+import InstituteContext from '../contexts/InstituteContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -58,21 +58,23 @@ type Props = {
 }
 
 function NewPost({ route, navigation }: Props) {
-  const [classId, setClassId] = useState<string | null>(null);
-  const [subject, setSubject] = useState<string | null>(null);
+  const [courseId, setCourseId] = useState<string | null>(null);
   const [file, setFile] = useState<DocumentPickerResult | null>(null);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
   const { activeAccount } = useContext(AccountContext);
   const { postType, postFormat } = route.params;
-  const { institute } = useInstitute(activeAccount);
+  const { institute, courses, classes } = useContext(InstituteContext);
 
   const theme = useTheme();
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
 
   const savePost = useCallback(async () => {
     Keyboard.dismiss();
+    if (!institute) {
+      return;
+    }
 
     if (postFormat !== 'text' && !file) {
       Alert.alert(
@@ -83,10 +85,10 @@ function NewPost({ route, navigation }: Props) {
       return;
     }
 
-    if (!classId) {
+    if (!courseId) {
       Alert.alert(
         '',
-        'Please select a class/subject.',
+        `${capitalize(institute.i18n.courseSingular)} is required.`,
         [{ text: 'OK' }],
       );
       return;
@@ -114,16 +116,12 @@ function NewPost({ route, navigation }: Props) {
         type: postFormat,
         title,
         description,
-        class: classId,
+        course: courseId,
         teacher: activeAccount.id,
         institute: activeAccount.institute,
         status: postFormat === 'video' ? 'uploading' : 'available',
         createdAt: firestore.FieldValue.serverTimestamp(),
       };
-
-      if (subject) {
-        post.subject = subject;
-      }
 
       const postRef = firestore().collection(collection).doc();
       const attachmentPath = getAttachmentPath(
@@ -189,16 +187,19 @@ function NewPost({ route, navigation }: Props) {
           { text: 'Retry', onPress: savePost },
         ],
       );
-      console.error(error);
+
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
   }, [
     postFormat,
     file,
-    classId,
+    courseId,
     title,
     activeAccount,
     description,
-    subject,
     collection,
     postType,
     navigation,
@@ -218,6 +219,10 @@ function NewPost({ route, navigation }: Props) {
       ),
     });
   }, [navigation, savePost, sending, theme.colors.onSurface]);
+
+  if (!institute) {
+    return null;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -242,10 +247,17 @@ function NewPost({ route, navigation }: Props) {
 
       <View style={{ height: 12 }} />
 
-      <ClassSubjectPicker
-        account={activeAccount}
-        onClassIdChange={setClassId}
-        onSubjectChange={setSubject}
+      <SelectInput
+        label={capitalize(institute.i18n.courseSingular)}
+        selection={courseId}
+        options={courses.map((course) => {
+          const klass = classes.find((c) => c.id === course.class);
+          return klass ? {
+            label: `${klass.name}: ${course.name}`,
+            value: course.id,
+          } : null;
+        }).filter(Boolean)}
+        onSelect={setCourseId}
       />
 
       <TextInput

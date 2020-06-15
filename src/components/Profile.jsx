@@ -13,15 +13,11 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
-import type { InstituteClass, TeacherClassSubject } from '../types';
 import UserAvatar from './UserAvatar';
 import AccountContext from '../contexts/AccountContext';
-import {
-  asTeacher, asStudent, getTeacherClassSubjects, capitalize,
-} from '../utils';
-import useInstitute from '../hooks/useInstitute';
-import useInstituteClasses from '../hooks/useInstituteClasses';
+import { capitalize } from '../utils';
 import config from '../config';
+import InstituteContext from '../contexts/InstituteContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,8 +47,7 @@ function Profile() {
   const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
   const { currentUser } = auth();
-  const { institute } = useInstitute(account);
-  const { classes } = useInstituteClasses(account);
+  const { institute, classes, courses } = useContext(InstituteContext);
 
   const uploadImage = useCallback(async (localImagePath: string) => {
     if (!account) {
@@ -62,7 +57,7 @@ function Profile() {
     setUploading(true);
 
     try {
-      const collection = asTeacher(account) ? 'teachers' : 'students';
+      const collection = account.isTeacher ? 'teachers' : 'students';
 
       const remoteRef = storage().ref(`users/${currentUser.uid}/photos/${account.id}`);
       await remoteRef.putFile(localImagePath);
@@ -99,23 +94,35 @@ function Profile() {
     }
   }, [theme.colors.primary, uploadImage]);
 
-  const studentClass: InstituteClass | null = useMemo(() => {
-    const student = asStudent(account);
-    if (student && classes) {
-      return classes.find((c) => c.id === student.class) || null;
+  const studentClassName: string | null = useMemo(() => {
+    if (account && !account.isTeacher && account.class) {
+      return classes.find((c) => c.id === account.class)?.name || null;
     }
     return null;
   }, [account, classes]);
 
-  const teacherClasses: TeacherClassSubject[] | null = useMemo(() => {
-    const teacher = asTeacher(account);
-    if (!teacher) {
-      return null;
+  const studentCourseNames: string[] | null = useMemo(() => {
+    if (account && !account.isTeacher && account.courses) {
+      return account.courses.map((courseId) => {
+        const course = courses.find((c) => c.id === courseId);
+        return course?.name;
+      }).filter(Boolean);
     }
-    return getTeacherClassSubjects(teacher, classes);
-  }, [account, classes]);
+    return null;
+  }, [account, courses]);
 
-  if (!account || !currentUser) {
+  const teacherCourseNames: string[] | null = useMemo(() => {
+    if (account && account.isTeacher && account.courses) {
+      return account.courses.map((courseId) => {
+        const course = courses.find((c) => c.id === courseId);
+        const klass = course?.class ? classes.find((c) => c.id === course?.class) : null;
+        return course && klass ? `${klass.name}: ${course.name}` : null;
+      }).filter(Boolean);
+    }
+    return null;
+  }, [account, classes, courses]);
+
+  if (!account || !institute) {
     return null;
   }
 
@@ -173,21 +180,30 @@ function Profile() {
           // eslint-disable-next-line react/jsx-props-no-spreading
           left={(props) => <List.Icon {...props} icon="bank-outline" />}
         />
-        {teacherClasses && (
+        {teacherCourseNames && (
           <List.Item
-            title="Class/Subjects"
-            description={teacherClasses.map(({ name, subject }) => (subject ? `${name}: ${subject}` : name)).join('\n')}
+            title={capitalize(institute.i18n.coursePlural)}
+            description={teacherCourseNames.join('\n')}
             // eslint-disable-next-line react/jsx-props-no-spreading
             left={(props) => <List.Icon {...props} icon="teach" />}
             descriptionNumberOfLines={100}
           />
         )}
-        {studentClass && (
+        {studentCourseNames && (
           <List.Item
-            title="Class"
-            description={studentClass.name}
+            title={capitalize(institute.i18n.coursePlural)}
+            description={studentCourseNames.join('\n')}
             // eslint-disable-next-line react/jsx-props-no-spreading
-            left={(props) => <List.Icon {...props} icon="teach" />}
+            left={(props) => <List.Icon {...props} icon="book-outline" />}
+            descriptionNumberOfLines={100}
+          />
+        )}
+        {studentClassName && (
+          <List.Item
+            title={capitalize(institute.i18n.classSingular)}
+            description={studentClassName}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            left={(props) => <List.Icon {...props} icon="account-group-outline" />}
           />
         )}
       </List.Section>

@@ -16,8 +16,6 @@ import type { ForumTopic, ForumUser } from '../types';
 import config from '../config';
 import useDoc from '../hooks/useDoc';
 import ForumItemMeta from './ForumItemMeta';
-import ClassName from './ClassName';
-import { asTeacher } from '../utils';
 import AccountContext from '../contexts/AccountContext';
 
 const styles = StyleSheet.create({
@@ -69,13 +67,12 @@ function TopicCard({ topic }: Props) {
   }, [topic.id]);
 
   const actions = useMemo(() => {
-    const teacher = asTeacher(activeAccount);
-    if (!author) {
+    if (!author || !activeAccount) {
       return null;
     }
 
     // a teacher can delete their own topics or those created by a student
-    if ((teacher && !author.isTeacher) || (activeAccount && activeAccount.id === topic.author)) {
+    if ((activeAccount.isTeacher && !author.isTeacher) || (activeAccount.id === topic.author)) {
       return [{
         title: 'Delete topic',
         icon: 'delete',
@@ -85,19 +82,6 @@ function TopicCard({ topic }: Props) {
 
     return null;
   }, [activeAccount, author, deleteTopic, topic.author]);
-
-  const extraMeta = useMemo(() => {
-    if (!author || !author.isTeacher || !asTeacher(activeAccount)) {
-      return null;
-    }
-
-    return (
-      <ClassName
-        id={topic.class}
-        prefix=" • in "
-      />
-    );
-  }, [activeAccount, author, topic.class]);
 
   const navigateToTopic = useCallback(() => {
     if (!author) {
@@ -118,7 +102,6 @@ function TopicCard({ topic }: Props) {
             timestamp={topic.createdAt}
             author={author}
             actions={actions}
-            extra={extraMeta}
           />
           <Title style={styles.title}>{topic.title}</Title>
           <View style={styles.replies}>

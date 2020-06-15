@@ -16,6 +16,7 @@ import AccountsContext from '../contexts/AccountContext';
 import AccountPicker from './AccountPicker';
 import RootNavigator from './RootNavigator';
 import useMultipleQuery from '../hooks/useMultipleQuery';
+import InstituteProvider from './InstituteProvider';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,34 +32,34 @@ function Main() {
   const [showPicker, setShowPicker] = useState<boolean>(false);
   const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
 
-  const currentUser = useMemo(() => auth().currentUser, []);
-  const activeAccountCacheKey = useMemo(() => `active_account_for_${currentUser.id}`, [currentUser]);
+  const authUser = useMemo(() => auth().currentUser, []);
+  const activeAccountCacheKey = useMemo(() => `active_account_for_${authUser.id}`, [authUser]);
 
   const studentsQuery = useMemo(() => {
-    if (!currentUser) {
+    if (!authUser) {
       return null;
-    } if (currentUser.phoneNumber) {
-      return firestore().collection('students').where('phoneNumber', '==', currentUser.phoneNumber);
-    } if (currentUser.email && currentUser.emailVerified) {
-      return firestore().collection('students').where('email', '==', currentUser.email);
-    } if (currentUser.email && !currentUser.emailVerified) {
+    } if (authUser.phoneNumber) {
+      return firestore().collection('students').where('phoneNumber', '==', authUser.phoneNumber);
+    } if (authUser.email && authUser.emailVerified) {
+      return firestore().collection('students').where('email', '==', authUser.email);
+    } if (authUser.email && !authUser.emailVerified) {
       setEmailVerificationPending(true);
     }
 
     return null;
-  }, [currentUser]);
+  }, [authUser]);
 
   const teachersQuery = useMemo(() => {
-    if (!currentUser) {
+    if (!authUser) {
       return null;
-    } if (currentUser.phoneNumber) {
-      return firestore().collection('teachers').where('phoneNumber', '==', currentUser.phoneNumber);
-    } if (currentUser.email && currentUser.emailVerified) {
-      return firestore().collection('teachers').where('email', '==', currentUser.email);
+    } if (authUser.phoneNumber) {
+      return firestore().collection('teachers').where('phoneNumber', '==', authUser.phoneNumber);
+    } if (authUser.email && authUser.emailVerified) {
+      return firestore().collection('teachers').where('email', '==', authUser.email);
     }
 
     return null;
-  }, [currentUser]);
+  }, [authUser]);
 
   const {
     loading,
@@ -76,12 +77,19 @@ function Main() {
   }, [activeAccountCacheKey]);
 
   const getActiveAccount = useCallback(() => {
+    let returnValue;
     let activeAccount = students.find((student) => student.id === activeAccountId);
 
-    if (!activeAccount) {
+    if (activeAccount) {
+      returnValue = { ...activeAccount, isTeacher: false };
+    } else {
       activeAccount = teachers.find((teacher) => teacher.id === activeAccountId);
+      if (activeAccount) {
+        returnValue = { ...activeAccount, isTeacher: true };
+      }
     }
-    return activeAccount || null;
+
+    return returnValue || null;
   }, [activeAccountId, students, teachers]);
 
   useEffect(() => {
@@ -136,7 +144,9 @@ function Main() {
         switchAccount: togglePicker,
       }}
     >
-      <RootNavigator />
+      <InstituteProvider instituteId={activeAccount?.institute}>
+        <RootNavigator />
+      </InstituteProvider>
       {(students.length > 0 || teachers.length > 0) && (
         <AccountPicker
           visible={showPicker}

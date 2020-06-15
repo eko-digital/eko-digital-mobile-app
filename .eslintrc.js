@@ -7,5 +7,8 @@ module.exports = {
   globals: {
     "__DEV__": "readonly",
     "fetch": "readonly",
+  },
+  rules: {
+    "react/require-default-props": 0,
   }
 };

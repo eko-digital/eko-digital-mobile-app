@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 
-import { asTeacher, asStudent, capitalize } from '../utils';
+import { capitalize } from '../utils';
 import Header from './Header';
 import BottomTabs from './BottomTabs';
 import NewPost from './NewPost';
@@ -11,6 +11,7 @@ import NewTopic from './NewTopic';
 import AccountNotFound from './AccountNotFound';
 import AccountContext from '../contexts/AccountContext';
 import AccountLoadingError from './AccountLoadingError';
+import InstituteLoadingError from './InstituteLoadingError';
 import Profile from './Profile';
 import Favourites from './Favourites';
 import Settings from './Settings';
@@ -18,20 +19,28 @@ import Institute from './Institute';
 import FullScreenImage from './FullScreenImage';
 import VideoScreen from './VideoScreen';
 import TopicScreen from './TopicScreen';
-import useInstitute from '../hooks/useInstitute';
 import VerifyEmail from './VerifyEmail';
+import InstituteContext from '../contexts/InstituteContext';
 
 const Stack = createStackNavigator();
 
 function StackNavigator() {
   const { activeAccount, loadingError } = useContext(AccountContext);
-  const { institute } = useInstitute(activeAccount);
+  const { institute, loadingError: instituteLoadingError } = useContext(InstituteContext);
 
   const authUser = auth().currentUser;
 
   let screens = null;
 
-  if (loadingError && !activeAccount) {
+  if (instituteLoadingError && !institute) {
+    screens = (
+      <Stack.Screen
+        name="InstituteLoadingError"
+        component={InstituteLoadingError}
+        options={{ title: 'Eko Digital' }}
+      />
+    );
+  } if (loadingError && !activeAccount) {
     screens = (
       <Stack.Screen
         name="AccountLoadingError"
@@ -65,7 +74,7 @@ function StackNavigator() {
           component={Profile}
           options={{ title: 'Profile' }}
         />
-        {asStudent(activeAccount) && (
+        {!activeAccount.isTeacher && (
           <Stack.Screen
             name="Favourites"
             component={Favourites}
@@ -92,7 +101,7 @@ function StackNavigator() {
           component={VideoScreen}
           options={({ route }) => ({ title: route.params.post.title })}
         />
-        {asTeacher(activeAccount) && (
+        {activeAccount.isTeacher && (
           <>
             <Stack.Screen
               name="NewPost"

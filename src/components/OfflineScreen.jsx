@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 // @flow
 import React from 'react';
 import { Button } from 'react-native-paper';

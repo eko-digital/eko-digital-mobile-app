@@ -1,6 +1,8 @@
 // @flow
-import React, { useContext } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useContext, useCallback } from 'react';
+import {
+  ScrollView, StyleSheet, View, Linking,
+} from 'react-native';
 import {
   Title,
   Paragraph,
@@ -10,11 +12,8 @@ import {
 import AutoHeightImage from 'react-native-auto-height-image';
 import { DefaultTheme } from '@react-navigation/native';
 
-import AccountContext from '../contexts/AccountContext';
-import useInstitute from '../hooks/useInstitute';
-import FullScreenActivityIndicator from './FullScreenActivityIndicator';
-import ErrorScreen from './ErrorScreen';
 import config from '../config';
+import InstituteContext from '../contexts/InstituteContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,27 +36,36 @@ const styles = StyleSheet.create({
 });
 
 function Institute() {
-  const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
 
-  const {
-    loading,
-    loadingError,
-    institute,
-    retry,
-  } = useInstitute(account);
+  const { institute } = useContext(InstituteContext);
 
-  if (loading) {
-    return <FullScreenActivityIndicator />;
-  }
+  const handleEmailPress = useCallback(() => {
+    if (!institute) {
+      return;
+    }
 
-  if (loadingError || !institute) {
-    return (
-      <ErrorScreen
-        description="Oops! Something went wrong."
-        onRetry={retry}
-      />
-    );
+    try {
+      Linking.openURL(`mailto:${institute.email}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [institute]);
+
+  const handlePhoneNumberPress = useCallback(() => {
+    if (!institute || !institute.phoneNumber) {
+      return;
+    }
+
+    try {
+      Linking.openURL(`tel:${institute.phoneNumber}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [institute]);
+
+  if (!institute) {
+    return null;
   }
 
   return (
@@ -83,6 +91,7 @@ function Institute() {
               description={institute.email}
               // eslint-disable-next-line react/jsx-props-no-spreading
               left={(props) => <List.Icon {...props} icon="at" />}
+              onPress={handleEmailPress}
             />
           )}
           {institute.phoneNumber && (
@@ -91,6 +100,7 @@ function Institute() {
               description={institute.phoneNumber}
               // eslint-disable-next-line react/jsx-props-no-spreading
               left={(props) => <List.Icon {...props} icon="phone" />}
+              onPress={handlePhoneNumberPress}
             />
           )}
         </List.Section>

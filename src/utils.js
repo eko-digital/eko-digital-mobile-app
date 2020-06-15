@@ -4,13 +4,7 @@ import '@react-native-firebase/functions';
 import DeviceInfo from 'react-native-device-info';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
-import type {
-  Account,
-  Teacher,
-  Student,
-  InstituteClass,
-  TeacherClassSubject,
-} from './types';
+import type { Account } from './types';
 
 const defaultApp = firebase.app();
 const functionsForMumbaiRegion = defaultApp.functions('asia-east2');
@@ -33,34 +27,6 @@ export function getInitials(name: string) {
   }
 
   return name.slice(0, 2).toUpperCase();
-}
-
-export function asTeacher(account: Account | null): Teacher | null {
-  return account && account.classes ? account : null;
-}
-
-export function asStudent(account: Account | null): Student | null {
-  return account && account.class ? account : null;
-}
-
-export function getTeacherClassSubjects(
-  teacher: Teacher | null,
-  classes: InstituteClass[],
-): TeacherClassSubject[] {
-  if (teacher && classes) {
-    return teacher.classes.map((tClass) => {
-      const currentClass = classes.find((c) => c.id === tClass.id);
-      if (currentClass) {
-        return {
-          id: currentClass.id,
-          name: currentClass.name,
-          subject: tClass.subject,
-        };
-      }
-      return null;
-    }).filter(Boolean);
-  }
-  return [];
 }
 
 export function getAttachmentPath(

@@ -16,8 +16,6 @@ import firestore from '@react-native-firebase/firestore';
 import type { ForumTopic } from '../types';
 import config from '../config';
 import AccountContext from '../contexts/AccountContext';
-import { asStudent, asTeacher } from '../utils';
-import ClassPicker from './ClassPicker';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,11 +31,15 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
+  route: {
+    params: {
+      courseId: string,
+    },
+  },
   navigation: any,
 }
 
-function NewLesson({ navigation }: Props) {
-  const [classId, setClassId] = useState<string | null>(null);
+function NewTopic({ route, navigation }: Props) {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [sending, setSending] = useState<boolean>(false);
@@ -46,22 +48,14 @@ function NewLesson({ navigation }: Props) {
   const theme = useTheme();
 
   const saveLesson = useCallback(async () => {
-    const isTeacher = Boolean(asTeacher(activeAccount));
-    const student = asStudent(activeAccount);
+    if (!activeAccount) {
+      return;
+    }
 
     if (!title) {
       Alert.alert(
         '',
         'Title is required.',
-        [{ text: 'OK' }],
-      );
-      return;
-    }
-
-    if (isTeacher && !classId) {
-      Alert.alert(
-        '',
-        'Please select a class.',
         [{ text: 'OK' }],
       );
       return;
@@ -83,16 +77,11 @@ function NewLesson({ navigation }: Props) {
     }
 
     try {
-      const topicClass = student ? student.class : classId;
-      if (!topicClass) {
-        throw new Error('Topic class can\'t be empty.');
-      }
-
       const topicData: $Diff<ForumTopic, { id: string }> = {
         title,
         description,
         author: activeAccount.id,
-        class: topicClass,
+        course: route.params.courseId,
         replyCount: 0,
         createdAt: firestore.FieldValue.serverTimestamp(),
       };
@@ -101,9 +90,12 @@ function NewLesson({ navigation }: Props) {
       navigation.goBack();
     } catch (error) {
       setSending(false);
-      console.error(error);
+      if (__DEV__) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
-  }, [activeAccount, classId, description, navigation, title]);
+  }, [activeAccount, description, navigation, route.params.courseId, title]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -121,14 +113,6 @@ function NewLesson({ navigation }: Props) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {asTeacher(activeAccount) && (
-        <ClassPicker
-          account={activeAccount}
-          classId={classId}
-          onChange={setClassId}
-        />
-      )}
-
       <TextInput
         label="Title"
         mode="outlined"
@@ -148,4 +132,4 @@ function NewLesson({ navigation }: Props) {
   );
 }
 
-export default NewLesson;
+export default NewTopic;

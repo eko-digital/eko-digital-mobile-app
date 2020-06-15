@@ -1,15 +1,18 @@
 // @flow
-import type { Account } from '../types';
-import useInstitute from '../hooks/useInstitute';
+import { useMemo } from 'react';
+import firestore from '@react-native-firebase/firestore';
+
+import type { Institute } from '../types';
+import useDoc from '../hooks/useDoc';
 
 type Props = {
-  account: Account,
+  instituteId: string,
 }
 
-function InstituteName({ account }: Props) {
-  const { institute } = useInstitute(account);
-
-  return institute ? institute.name : '...';
+function InstituteName({ instituteId }: Props) {
+  const query = useMemo(() => firestore().collection('institute-data').doc(instituteId), [instituteId]);
+  const { data: institute } = useDoc<Institute>(query);
+  return institute?.name || '...';
 }
 
 export default InstituteName;

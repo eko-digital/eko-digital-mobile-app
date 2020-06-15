@@ -12,7 +12,6 @@ import config from '../config';
 import useDoc from '../hooks/useDoc';
 import ForumItemMeta from './ForumItemMeta';
 import AccountContext from '../contexts/AccountContext';
-import { asTeacher } from '../utils';
 
 const styles = StyleSheet.create({
   card: {
@@ -42,13 +41,12 @@ function ReplyCard({ reply }: Props) {
   }, [reply.id]);
 
   const actions = useMemo(() => {
-    const teacher = asTeacher(activeAccount);
-    if (!author) {
+    if (!author || !activeAccount) {
       return null;
     }
 
     // a teacher can delete their own replies or those added by a student
-    if ((teacher && !author.isTeacher) || (activeAccount && activeAccount.id === reply.author)) {
+    if ((activeAccount.isTeacher && !author.isTeacher) || (activeAccount.id === reply.author)) {
       return [{
         title: 'Delete reply',
         icon: 'delete',

@@ -14,7 +14,7 @@ import storage from '@react-native-firebase/storage';
 import { Alert, StyleSheet } from 'react-native';
 
 import type { Post, PostType, Account } from '../types';
-import { asTeacher, asStudent, getAttachmentPath } from '../utils';
+import { getAttachmentPath } from '../utils';
 import PostVideoPreview from './PostVideoPreview';
 import ReadMoreText from './ReadMoreText';
 import PostPDFPreview from './PostPDFPreview';
@@ -43,19 +43,18 @@ function PostCard({ post, postType, activeAccount }: Props) {
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
 
   const isFavourite: boolean = useMemo(() => {
-    const student = asStudent(activeAccount);
-    if (!student) {
+    if (!activeAccount || activeAccount.isTeacher) {
       return false;
     }
 
     if (postType === 'lesson') {
-      return student.favoriteLessons
-        ? student.favoriteLessons.includes(post.id)
+      return activeAccount.favoriteLessons
+        ? activeAccount.favoriteLessons.includes(post.id)
         : false;
     }
 
-    return student.favoriteAssignments
-      ? student.favoriteAssignments.includes(post.id)
+    return activeAccount.favoriteAssignments
+      ? activeAccount.favoriteAssignments.includes(post.id)
       : false;
   }, [activeAccount, post.id, postType]);
 
@@ -107,7 +106,7 @@ function PostCard({ post, postType, activeAccount }: Props) {
 
   const menu = (props) => (
     <>
-      {asTeacher(activeAccount) ? (
+      {activeAccount?.isTeacher ? (
         <Menu
           visible={menuVisible}
           onDismiss={toggleMenu}
@@ -142,9 +141,6 @@ function PostCard({ post, postType, activeAccount }: Props) {
   );
 
   const meta = [];
-  if (post.subject) {
-    meta.push(post.subject);
-  }
   if (post.createdAt) {
     meta.push(prettyTime(post.createdAt));
   }

@@ -5,7 +5,7 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   Caption,
@@ -22,10 +22,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PreferencesContext from '../contexts/PreferencesContext';
 import AccountContext from '../contexts/AccountContext';
 import UserAvatar from './UserAvatar';
-import InstituteName from './InstituteName';
-import { asTeacher, asStudent, capitalize } from '../utils';
+import InstituteContext from '../contexts/InstituteContext';
+import { capitalize } from '../utils';
 import config from '../config';
-import useInstitute from '../hooks/useInstitute';
 
 const styles = StyleSheet.create({
   drawerContent: {
@@ -67,7 +66,7 @@ function DrawerContent(props: Props) {
   const paperTheme = useTheme();
   const { activeAccount, switchAccount } = React.useContext(AccountContext);
   const { theme, toggleTheme } = React.useContext(PreferencesContext);
-  const { institute } = useInstitute(activeAccount);
+  const { institute } = useContext(InstituteContext);
 
   const { progress, navigation } = props;
 
@@ -136,9 +135,9 @@ function DrawerContent(props: Props) {
                   />
                 </View>
                 <Caption style={styles.caption}>
-                  {asTeacher(activeAccount) ? 'Teacher' : 'Student'}
+                  {activeAccount.isTeacher ? 'Teacher' : 'Student'}
                   {', '}
-                  <InstituteName account={activeAccount} />
+                  {institute?.name || ''}
                 </Caption>
               </View>
             </View>
@@ -156,7 +155,7 @@ function DrawerContent(props: Props) {
             label="Profile"
             onPress={openProfile}
           />
-          {asStudent(activeAccount) && (
+          {!activeAccount.isTeacher && (
             <DrawerItem
               icon={({ color, size }) => (
                 <MaterialCommunityIcons

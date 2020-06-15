@@ -18,10 +18,11 @@ import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { Provider as PaperProvider } from 'react-native-paper';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
-import RNFirebaseAuthUI from './RNFirebaseAuthUI';
-import Main from './components/Main';
-import PreferencesContext from './contexts/PreferencesContext';
 import config from './config';
+import Main from './components/Main';
+import RNFirebaseAuthUI from './RNFirebaseAuthUI';
+import PreferencesContext from './contexts/PreferencesContext';
+import AccountProvider from './components/AccountProvider';
 
 function App() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
@@ -82,7 +83,9 @@ function App() {
           <PaperProvider
             theme={theme === 'light' ? config.themes.DefaultTheme : config.themes.DarkTheme}
           >
-            <Main />
+            <AccountProvider>
+              <Main />
+            </AccountProvider>
           </PaperProvider>
         </PreferencesContext.Provider>
       </AppearanceProvider>

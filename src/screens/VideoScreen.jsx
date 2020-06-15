@@ -7,7 +7,7 @@ import {
 import { WebView } from 'react-native-webview';
 
 import type { Post } from '../types';
-import ErrorScreen from './ErrorScreen';
+import ErrorScreen from '../components/ErrorScreen';
 
 const html = `
 <!DOCTYPE html>

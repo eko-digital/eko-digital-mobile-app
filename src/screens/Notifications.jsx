@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 
-import EmptyScreen from './EmptyScreen';
+import EmptyScreen from '../components/EmptyScreen';
 import noMessages from '../images/no-messages.png';
 
 function Notifications() {

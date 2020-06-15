@@ -13,7 +13,7 @@ import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 
-import UserAvatar from './UserAvatar';
+import UserAvatar from '../components/UserAvatar';
 import AccountContext from '../contexts/AccountContext';
 import { capitalize } from '../utils';
 import config from '../config';

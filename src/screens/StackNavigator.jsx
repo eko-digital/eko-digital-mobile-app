@@ -4,12 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 
 import { capitalize } from '../utils';
-import Header from './Header';
+import Header from '../components/Header';
+import AccountContext from '../contexts/AccountContext';
 import BottomTabs from './BottomTabs';
 import NewPost from './NewPost';
 import NewTopic from './NewTopic';
 import AccountNotFound from './AccountNotFound';
-import AccountContext from '../contexts/AccountContext';
 import AccountLoadingError from './AccountLoadingError';
 import InstituteLoadingError from './InstituteLoadingError';
 import Profile from './Profile';

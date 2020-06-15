@@ -19,7 +19,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 import config from './config';
-import Main from './components/Main';
+import Main from './screens/Main';
 import RNFirebaseAuthUI from './RNFirebaseAuthUI';
 import PreferencesContext from './contexts/PreferencesContext';
 import AccountProvider from './components/AccountProvider';

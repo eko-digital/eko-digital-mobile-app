@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import Posts from './Posts';
+import Posts from '../components/Posts';
 
 function Lessons() {
   return <Posts postType="lesson" />;

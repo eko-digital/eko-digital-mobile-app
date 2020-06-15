@@ -1,8 +1,8 @@
 // @flow
 import React, { useContext } from 'react';
 
-import RootNavigator from './RootNavigator';
-import InstituteProvider from './InstituteProvider';
+import RootNavigator from '../components/RootNavigator';
+import InstituteProvider from '../components/InstituteProvider';
 import AccountContext from '../contexts/AccountContext';
 
 function Main() {

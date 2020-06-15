@@ -25,10 +25,10 @@ import type {
   PostType,
   PostFormat,
 } from '../types';
-import ImagePicker from './ImagePicker';
-import VideoPicker from './VideoPicker';
-import PDFPicker from './PDFPicker';
-import SelectInput from './SelectInput';
+import ImagePicker from '../components/ImagePicker';
+import VideoPicker from '../components/VideoPicker';
+import PDFPicker from '../components/PDFPicker';
+import SelectInput from '../components/SelectInput';
 import AccountContext from '../contexts/AccountContext';
 import { getCallableFunction, getAttachmentPath, capitalize } from '../utils';
 import config from '../config';

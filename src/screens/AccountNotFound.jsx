@@ -5,7 +5,7 @@ import auth from '@react-native-firebase/auth';
 import { Linking, StyleSheet } from 'react-native';
 
 import emptyState from '../images/empty-state.png';
-import EmptyScreen from './EmptyScreen';
+import EmptyScreen from '../components/EmptyScreen';
 import config from '../config';
 
 const ekoDigitalHomeUrl = 'https://eko.digital';

@@ -7,7 +7,7 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Button, Paragraph, useTheme } from 'react-native-paper';
 
-import EmptyScreen from './EmptyScreen';
+import EmptyScreen from '../components/EmptyScreen';
 import messageSent from '../images/message-sent.png';
 import config from '../config';
 

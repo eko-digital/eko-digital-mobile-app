@@ -12,13 +12,13 @@ import firestore from '@react-native-firebase/firestore';
 
 import type { ForumTopic, ForumReply, ForumUser } from '../types';
 import config from '../config';
-import ForumItemMeta from './ForumItemMeta';
-import TopicReplyField from './TopicReplyField';
-import ReplyCard from './ReplyCard';
+import ForumItemMeta from '../components/ForumItemMeta';
+import TopicReplyField from '../components/TopicReplyField';
+import ReplyCard from '../components/ReplyCard';
 import useDocsQuery from '../hooks/useDocsQuery';
-import FullScreenActivityIndicator from './FullScreenActivityIndicator';
-import OfflineScreen from './OfflineScreen';
-import ErrorScreen from './ErrorScreen';
+import FullScreenActivityIndicator from '../components/FullScreenActivityIndicator';
+import OfflineScreen from '../components/OfflineScreen';
+import ErrorScreen from '../components/ErrorScreen';
 
 const styles = StyleSheet.create({
   container: {

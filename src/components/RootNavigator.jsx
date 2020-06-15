@@ -6,7 +6,7 @@ import { useTheme } from 'react-native-paper';
 import { StatusBar } from 'react-native';
 
 import DrawerContent from './DrawerContent';
-import StackNavigator from './StackNavigator';
+import StackNavigator from '../screens/StackNavigator';
 
 const Drawer = createDrawerNavigator();
 

@@ -5,14 +5,14 @@ import firestore from '@react-native-firebase/firestore';
 
 import type { ForumTopic } from '../types';
 import config from '../config';
-import EmptyScreen from './EmptyScreen';
+import EmptyScreen from '../components/EmptyScreen';
 import AccountContext from '../contexts/AccountContext';
 import discuss from '../images/discuss.png';
 import useDocsQuery from '../hooks/useDocsQuery';
-import FullScreenActivityIndicator from './FullScreenActivityIndicator';
-import OfflineScreen from './OfflineScreen';
-import ErrorScreen from './ErrorScreen';
-import TopicCard from './TopicCard';
+import FullScreenActivityIndicator from '../components/FullScreenActivityIndicator';
+import OfflineScreen from '../components/OfflineScreen';
+import ErrorScreen from '../components/ErrorScreen';
+import TopicCard from '../components/TopicCard';
 
 const styles = StyleSheet.create({
   container: {

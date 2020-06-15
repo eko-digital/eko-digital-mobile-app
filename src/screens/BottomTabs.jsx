@@ -12,9 +12,9 @@ import Assignments from './Assignments';
 import Discuss from './Discuss';
 import Notifications from './Notifications';
 import AccountContext from '../contexts/AccountContext';
-import AddLessonFABGroup from './AddLessonFABGroup';
-import AddAssignmentFABGroup from './AddAssignmentFABGroup';
-import AddTopicFab from './AddTopicFab';
+import AddLessonFABGroup from '../components/AddLessonFABGroup';
+import AddAssignmentFABGroup from '../components/AddAssignmentFABGroup';
+import AddTopicFab from '../components/AddTopicFab';
 
 const Tab = createMaterialBottomTabNavigator();
 

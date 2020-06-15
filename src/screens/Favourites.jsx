@@ -5,7 +5,7 @@ import { Dimensions } from 'react-native';
 import { useTheme, Paragraph } from 'react-native-paper';
 import color from 'color';
 
-import FavouritesList from './FavouritesList';
+import FavouritesList from '../components/FavouritesList';
 import overlay from '../overlay';
 
 const FavouriteLessons = () => (

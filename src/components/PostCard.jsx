@@ -42,7 +42,7 @@ function PostCard({ post, postType, activeAccount }: Props) {
 
   const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
 
-  const isFavourite: boolean = useMemo(() => {
+  const isFavorite: boolean = useMemo(() => {
     if (!activeAccount || activeAccount.isTeacher) {
       return false;
     }
@@ -67,11 +67,11 @@ function PostCard({ post, postType, activeAccount }: Props) {
       ? 'favoriteLessons'
       : 'favoriteAssignments';
     await firestore().collection('students').doc(activeAccount.id).update({
-      [favoritesField]: isFavourite
+      [favoritesField]: isFavorite
         ? firestore.FieldValue.arrayRemove(post.id)
         : firestore.FieldValue.arrayUnion(post.id),
     });
-  }, [activeAccount.id, isFavourite, post.id, postType]);
+  }, [activeAccount.id, isFavorite, post.id, postType]);
 
   const deletePost = useCallback(async () => {
     const { currentUser } = auth();
@@ -101,7 +101,7 @@ function PostCard({ post, postType, activeAccount }: Props) {
     await deletePost();
   }, [deletePost, post.id]);
 
-  let rippleColor = isFavourite ? theme.colors.placeholder : theme.colors.notification;
+  let rippleColor = isFavorite ? theme.colors.placeholder : theme.colors.notification;
   rippleColor = color(rippleColor).alpha(0.3).string();
 
   const menu = (props) => (
@@ -131,9 +131,9 @@ function PostCard({ post, postType, activeAccount }: Props) {
         </Menu>
       ) : (
         <IconButton
-          icon={isFavourite ? 'heart' : 'heart-outline'}
+          icon={isFavorite ? 'heart' : 'heart-outline'}
           onPress={toggleFavorite}
-          color={isFavourite ? theme.colors.notification : theme.colors.placeholder}
+          color={isFavorite ? theme.colors.notification : theme.colors.placeholder}
           rippleColor={rippleColor}
         />
       )}

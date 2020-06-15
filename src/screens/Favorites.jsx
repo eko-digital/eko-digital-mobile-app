@@ -5,20 +5,20 @@ import { Dimensions } from 'react-native';
 import { useTheme, Paragraph } from 'react-native-paper';
 import color from 'color';
 
-import FavouritesList from '../components/FavouritesList';
+import FavoritesList from '../components/FavoritesList';
 import overlay from '../overlay';
 
-const FavouriteLessons = () => (
-  <FavouritesList collection="lessons" />
+const FavoriteLessons = () => (
+  <FavoritesList collection="lessons" />
 );
 
-const FavouriteAssignments = () => (
-  <FavouritesList collection="assignments" />
+const FavoriteAssignments = () => (
+  <FavoritesList collection="assignments" />
 );
 
 const initialLayout = { width: Dimensions.get('window').width };
 
-function Favourites() {
+function Favorites() {
   const [index, setIndex] = React.useState(0);
 
   const theme = useTheme();
@@ -29,8 +29,8 @@ function Favourites() {
   ]);
 
   const renderScene = SceneMap({
-    lessons: FavouriteLessons,
-    assignments: FavouriteAssignments,
+    lessons: FavoriteLessons,
+    assignments: FavoriteAssignments,
   });
 
   const tabBarColor = theme.dark
@@ -77,4 +77,4 @@ function Favourites() {
   );
 }
 
-export default Favourites;
+export default Favorites;

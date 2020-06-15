@@ -13,7 +13,7 @@ import AccountNotFound from './AccountNotFound';
 import AccountLoadingError from './AccountLoadingError';
 import InstituteLoadingError from './InstituteLoadingError';
 import Profile from './Profile';
-import Favourites from './Favourites';
+import Favorites from './Favorites';
 import Settings from './Settings';
 import Institute from './Institute';
 import FullScreenImage from './FullScreenImage';
@@ -76,9 +76,9 @@ function StackNavigator() {
         />
         {!activeAccount.isTeacher && (
           <Stack.Screen
-            name="Favourites"
-            component={Favourites}
-            options={{ title: 'Favourites' }}
+            name="Favorites"
+            component={Favorites}
+            options={{ title: 'Favorites' }}
           />
         )}
         <Stack.Screen

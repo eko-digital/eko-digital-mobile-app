@@ -30,7 +30,7 @@ type Props = {
   collection: 'lessons' | 'assignments';
 }
 
-function FavouritesList({ collection }: Props) {
+function FavoritesList({ collection }: Props) {
   const [favorites, setFavorites] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingError, setLoadingError] = useState<boolean>(false);
@@ -98,8 +98,8 @@ function FavouritesList({ collection }: Props) {
     return (
       <EmptyScreen
         illustration={waiting}
-        title={`Your favourite ${collection}`}
-        description={`You can add a ${collection === 'lessons' ? 'lesson' : 'assignment'} to favourites by tapping on the heart icon.`}
+        title={`Your favorite ${collection}`}
+        description={`You can add a ${collection === 'lessons' ? 'lesson' : 'assignment'} to favorites by tapping on the heart icon.`}
       />
     );
   }
@@ -120,4 +120,4 @@ function FavouritesList({ collection }: Props) {
   );
 }
 
-export default FavouritesList;
+export default FavoritesList;

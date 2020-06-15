@@ -74,8 +74,8 @@ function DrawerContent(props: Props) {
     navigation.navigate('Profile');
   }, [navigation]);
 
-  const openFavourites = useCallback(() => {
-    navigation.navigate('Favourites');
+  const openFavorites = useCallback(() => {
+    navigation.navigate('Favorites');
   }, [navigation]);
 
   const openSettings = useCallback(() => {
@@ -164,8 +164,8 @@ function DrawerContent(props: Props) {
                   size={size}
                 />
               )}
-              label="Favourites"
-              onPress={openFavourites}
+              label="Favorites"
+              onPress={openFavorites}
             />
           )}
           <DrawerItem

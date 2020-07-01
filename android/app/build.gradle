@@ -2,6 +2,7 @@ apply plugin: "com.android.application"
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 import com.android.build.OutputFile
 
@@ -221,6 +222,17 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
+
+    addUnimodulesDependencies([exclude: [
+        'expo-permissions',
+        'unimodules-app-loader',
+        'unimodules-barcode-scanner-interface',
+        'unimodules-camera-interface',
+        'unimodules-face-detector-interface',
+        'unimodules-permissions-interface',
+        'unimodules-sensors-interface',
+        'unimodules-task-manager-interface',
+    ]])
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

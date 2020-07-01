@@ -42,6 +42,7 @@
     "react-native-safe-area-context": "^1.0.0",
     "react-native-screens": "^2.7.0",
     "react-native-tab-view": "^2.14.2",
+    "react-native-unimodules": "^0.10.1",
     "react-native-vector-icons": "https://github.com/oblador/react-native-vector-icons.git#14bbe2a",
     "react-native-video": "^4.4.5",
     "react-native-webview": "^9.4.0"

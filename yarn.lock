@@ -1120,39 +1120,39 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.7.2.tgz#d2e1530af5702e00578914b41468898c10d3289c"
   integrity sha512-pIwc6e0ZINw6PJqNVsAxzOVJUDg6au2TdulY+ZOYQ11SPDs5I2n9likoGrElPmJjajT4s9h87uz/6PWP2k9PxQ==
 
-"@react-native-firebase/app@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-7.0.1.tgz#9cf1836138e9ef3770139a9d3ce35d43c5c53bf1"
-  integrity sha512-OTjTSxk2erJKCuURdN7cwc6wB7SFyBPuuFFDoKl3tg7NdQQS1vDNor2uvFC4WSjfDiaR4/UUNZEBtwtOuG1Fwg==
+"@react-native-firebase/app@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.0.0.tgz#bde1b7f72ce373141586a12be4ef6e6f7865b72b"
+  integrity sha512-WraPvpoXOGtSqS9b1tucqgDKLiGDP6eeAwEkutsqhYZYpaVkbQj0PA3Mlb0/Hi09xPQ7xtSV+8luTTBJBHnvHg==
   dependencies:
     "@react-native-firebase/app-types" "6.7.2"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/auth@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-7.0.1.tgz#f689b247ac3b7c627552b7ea8f6e08cfce4d1497"
-  integrity sha512-5HuSVaYvjYYs78tmrXwM6huyl+U6nOZM7BgpuiR0XVUE4CyMNc8XcA8L43Crt6QaUqip9bqBQ/01v6tciOqbZg==
+"@react-native-firebase/auth@^8.0.9":
+  version "8.0.9"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-8.0.9.tgz#2fd0c59b7df78ff904b62d1a0a86a8df177d7c31"
+  integrity sha512-ZK+iXHIdJNqrSQYtBZYyVrx1JCQXPYVqz61gwsIOB2hi8zTs1vUcaZUcK4joI/fAOKSPRwwC8WosOwdLy2kzmg==
 
-"@react-native-firebase/dynamic-links@^7.1.4":
-  version "7.1.4"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/dynamic-links/-/dynamic-links-7.1.4.tgz#04020f514da97a8fe8cb3b301d6271320ee4b0ce"
-  integrity sha512-jRmEpuy8kx1yH6fr1yH0vUxkDWIAs5or3Rm3KsBz5RWEikzI5Lm8Nqa0J8IHD10xcznea8bf7yQraP9o6zMKvA==
+"@react-native-firebase/dynamic-links@^7.2.2":
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/dynamic-links/-/dynamic-links-7.2.2.tgz#535bf9a96b1654d4911b0fb697fbb52b07232f96"
+  integrity sha512-FhyX7UHnW+cv1Zw/dqcpnaL74gxFx2c+kx4dxLqttr9C9mQZ7mV5QEa5xAA2ehBWZcgPBmNI/5d6smIDHlaOsg==
 
-"@react-native-firebase/firestore@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-7.0.1.tgz#29b7caca7e7ce823895b93377bcde5f1f9d71186"
-  integrity sha512-yYPAOXlAotFfhLTsa3GLlJDxgJhqF1jxm5cLPrNWqWCbcN2Vo6XevQhpHzST2pwuwqeEEGoq80W28XZRDe3k9g==
+"@react-native-firebase/firestore@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/firestore/-/firestore-7.2.3.tgz#b2e8be60212b42df32c7a150c17e3cb230d2ae5e"
+  integrity sha512-oxrVzKYvYUof4YGsTK4miNW+5ZkbSHvWMSzsLfTFRbK0FbytzuaWGcdD4LXdgnAGn2Vskeith/Qm6bJhFZZwpw==
 
-"@react-native-firebase/functions@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/functions/-/functions-7.0.1.tgz#e00321e5539ef98d365e272c7e2af8cea663dc1b"
-  integrity sha512-HEHTXA1SFmIE3Iy4RI6dfgN2MEVIjQQla3d79SFTaKofHu9irqRFo8ttkiwypObBIPmpzRBJ4qEfhDzhrzJdVw==
+"@react-native-firebase/functions@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/functions/-/functions-7.1.7.tgz#775cb2f52f4d5eb207042e9a32dd9983a49439d9"
+  integrity sha512-ObmLrO03373q5qj3rzeBDM9JVgShNXGxhFMAh8dJAXzk07vbupifhSJjtRtTePdVfqDyllwqqVcUs0jC/CzndA==
 
-"@react-native-firebase/storage@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-7.0.1.tgz#8fc2a4a0f1546b5d835cc2fc02869e9d14d7aaa9"
-  integrity sha512-+l/yK9U2BLaYgBCYln8iu7oF38ikBGYrN183sjVxBhPfzijlg8nveH+Gaxb7+lnUPajxP/Ta72+SI4pvtKgTqQ==
+"@react-native-firebase/storage@^7.1.7":
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-7.1.7.tgz#40e668657b4e5c943ceeda33df1f807e093daa0a"
+  integrity sha512-Pw+FiAJFM63jWw1zqKDYeB62Ab3+hqqddjWudYaPghwQZOeA5d/N1iPUSsG0iAsfc8bU5w3WQwOq+fIZpSVXzQ==
 
 "@react-navigation/core@^5.5.2":
   version "5.5.2"

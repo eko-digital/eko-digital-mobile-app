@@ -3,13 +3,17 @@ export type FirestoreTimestamp = {
   _seconds: number,
 }
 
+export type ColorScheme = 'light' | 'dark' | 'system-default';
+
+export type WeekdaysShort = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
+
 export type InstituteType = 'school' | 'college' | 'university' | 'institute';
 
 export type Institute = {|
   id: string,
   name: string,
-  logo: string,
-  description: string,
+  logo?: string,
+  description?: string,
   email: string,
   phoneNumber?: string,
   type: InstituteType,
@@ -35,6 +39,7 @@ export type Course = {|
   thumbnail?: string | null,
   class: string,
   institute: string,
+  lessonCount: number,
   createdAt: FirestoreTimestamp,
 |};
 
@@ -50,8 +55,8 @@ export type Student = {|
   studentID?: string,
   father?: string,
   mother?: string,
-  favoriteLessons?: string[],
-  favoriteAssignments?: string[],
+  bookmarkedLessons?: string[],
+  bookmarkedAssignments?: string[],
   isTeacher: false,
 |};
 
@@ -75,30 +80,65 @@ export type DocumentPickerResult = {
   uri: string,
 }
 
-export type LessonFormat = 'video' | 'image' | 'pdf' | 'text';
-export type AssignmentFormat = 'image' | 'pdf' | 'text';
+export type LessonType = 'live' | 'upload';
+export type AttachmentType = 'video' | 'audio' | 'image' | 'pdf' | 'other';
+export type AssignmentSubmissionType = AttachmentType | 'text-only';
+export type CourseItemType = 'lesson' | 'assignment';
+export type CourseItemStatus = 'uploading' | 'available' | 'processing' | 'processing-error';
 
-export type Post = {|
+export type Attachment = {|
+  type: AttachmentType,
+  url: string,
+  name: string,
+  size: number,
+  streamID?: string, // for video attachments only
+  streamToken?: string, // for video attachments only
+  duration?: number, // for audio/video attachments only
+  mimeType: string,
+|}
+
+export type Lesson = {|
   id: string,
-  type: LessonFormat,
+  type: LessonType,
   title: string,
   description?: string,
   course?: string,
   teacher: string,
   institute: string,
-  attachment?: string,
-  attachmentName?: string,
-  attachmentSize?: number,
-  videoId?: string,
-  videoToken?: string,
-  thumbnail?: string,
-  duration?: number,
-  status: 'uploading' | 'available' | 'processing-error',
+  attachment?: Attachment,
+  status: CourseItemStatus,
+  repeating?: boolean, // for live classes only
+  repeatsOn?: WeekdaysShort[], // for live classes only
+  from?: FirestoreTimestamp, // for live classes only
+  to?: FirestoreTimestamp, // for live classes only
+  live?: boolean, // for live classes only
   createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
 |}
 
-export type PostType = 'lesson' | 'assignment';
-export type PostFormat = LessonFormat | AssignmentFormat;
+export type Assignment = {|
+  id: string,
+  title: string,
+  description?: string,
+  course?: string,
+  teacher: string,
+  institute: string,
+  attachment?: Attachment,
+  status: CourseItemStatus,
+  submissionType: AssignmentSubmissionType,
+  deadline?: FirestoreTimestamp,
+  createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
+|}
+
+export type AssignmentSubmission = {|
+  id: string,
+  description?: string,
+  assignment?: string,
+  student: string,
+  institute: string,
+  attachment?: Attachment,
+  status: CourseItemStatus,
+  createdAt?: FirestoreTimestamp, // it's null during doc is saved in firestore
+|}
 
 export type ForumTopic = {
   id: string,

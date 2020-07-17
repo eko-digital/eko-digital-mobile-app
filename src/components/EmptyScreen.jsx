@@ -1,8 +1,9 @@
 // @flow
 import * as React from 'react';
 import { ScrollView, Image, StyleSheet } from 'react-native';
-import { Title, Paragraph } from 'react-native-paper';
+import { Title } from 'react-native-paper';
 import config from '../config';
+import BodyText from './BodyText';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,10 +16,11 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: config.values.space.large,
+    textAlign: 'center',
   },
   description: {
-    textAlign: 'center',
     marginVertical: config.values.space.small,
+    textAlign: 'center',
   },
 });
 
@@ -39,7 +41,7 @@ function EmptyScreen({
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={illustration} />
       <Title style={styles.title}>{title}</Title>
-      <Paragraph style={styles.description}>{description}</Paragraph>
+      <BodyText style={styles.description}>{description}</BodyText>
       {extra}
     </ScrollView>
   );

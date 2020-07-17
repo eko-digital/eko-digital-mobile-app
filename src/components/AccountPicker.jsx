@@ -15,8 +15,11 @@ import InstituteName from './InstituteName';
 import config from '../config';
 
 const styles = StyleSheet.create({
+  scrollArea: {
+    paddingHorizontal: 0,
+  },
   scrollContainer: {
-    paddingBottom: config.values.space.large,
+    paddingVertical: config.values.space.large,
   },
   account: {
     flexDirection: 'row',
@@ -89,7 +92,7 @@ function AccountPicker({
         onDismiss={onToggle}
       >
         <Dialog.Title>Accounts</Dialog.Title>
-        <Dialog.ScrollArea style={{ padding: 0 }}>
+        <Dialog.ScrollArea style={styles.scrollArea}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             {students.map((account) => renderAccount(account, false))}
             {teachers.map((account) => renderAccount(account, true))}

@@ -1,13 +1,9 @@
 // @flow
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-} from 'react-native';
+import { View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-import type { Post } from '../types';
-import ErrorScreen from '../components/ErrorScreen';
+import ErrorScreen from './ErrorScreen';
 
 const html = `
 <!DOCTYPE html>
@@ -29,7 +25,7 @@ const html = `
       align-items: center;
     }
   </style>
-  <stream src="[token]" controls preload autoplay width="100vw" height="100vh"></stream>
+  <stream src="[token]" controls preload width="100vw" height="100vh"></stream>
   <script data-cfasync="false" defer type="text/javascript"
     src="https://embed.cloudflarestream.com/embed/r4xu.fla9.latest.js?video=[token]">
   </script>
@@ -38,37 +34,27 @@ const html = `
 </html>
 `;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
 type Props = {
-  route: {
-    params: {
-      post: Post,
-    },
-  },
+  token: string,
+  style?: any,
 }
 
-function VideoScreen({ route }: Props) {
-  const { params: { post } } = route;
-  if (!post.videoToken) {
+function StreamVideoPlayer({ token, style }: Props) {
+  if (!token) {
     return <ErrorScreen description="An unexpected error has occurred while loading video. Please try again later." />;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={style}>
       <WebView
         allowsFullscreenVideo
         mediaPlaybackRequiresUserAction={false}
         bounces={false}
         originWhitelist={['*']}
-        source={{ html: html.replace('[token]', post.videoToken) }}
+        source={{ html: html.replace('[token]', token) }}
       />
     </View>
   );
 }
 
-export default VideoScreen;
+export default StreamVideoPlayer;

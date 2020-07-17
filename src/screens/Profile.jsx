@@ -12,6 +12,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
 import UserAvatar from '../components/UserAvatar';
 import AccountContext from '../contexts/AccountContext';
@@ -43,6 +44,8 @@ const styles = StyleSheet.create({
 function Profile() {
   const [uploading, setUploading] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
+
+  const navigation = useNavigation();
 
   const { activeAccount: account } = useContext(AccountContext);
   const theme = useTheme();
@@ -93,6 +96,10 @@ function Profile() {
       console.error(error);
     }
   }, [theme.colors.primary, uploadImage]);
+
+  const navigateToInstitute = useCallback(() => {
+    navigation.navigate('Institute');
+  }, [navigation]);
 
   const studentClassName: string | null = useMemo(() => {
     if (account && !account.isTeacher && account.class) {
@@ -145,7 +152,7 @@ function Profile() {
               name="camera"
               size={24}
               color="#fff"
-              style={[styles.editIcon, { backgroundColor: theme.colors.accent }]}
+              style={[styles.editIcon, { backgroundColor: theme.colors.primary }]}
             />
           )}
         </>
@@ -156,7 +163,7 @@ function Profile() {
           title="Name"
           description={account.name}
           // eslint-disable-next-line react/jsx-props-no-spreading
-          left={(props) => <List.Icon {...props} icon="account" />}
+          left={(props) => <List.Icon {...props} icon="account-outline" />}
         />
         {currentUser.email && (
           <List.Item
@@ -171,7 +178,7 @@ function Profile() {
             title="Phone number"
             description={currentUser.phoneNumber}
             // eslint-disable-next-line react/jsx-props-no-spreading
-            left={(props) => <List.Icon {...props} icon="phone" />}
+            left={(props) => <List.Icon {...props} icon="phone-outline" />}
           />
         )}
         <List.Item
@@ -179,7 +186,18 @@ function Profile() {
           description={institute ? institute.name : '...'}
           // eslint-disable-next-line react/jsx-props-no-spreading
           left={(props) => <List.Icon {...props} icon="bank-outline" />}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          right={(props) => <List.Icon {...props} icon="chevron-right" />}
+          onPress={navigateToInstitute}
         />
+        {studentClassName && (
+          <List.Item
+            title={capitalize(institute.i18n.classSingular)}
+            description={studentClassName}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            left={(props) => <List.Icon {...props} icon="account-group-outline" />}
+          />
+        )}
         {teacherCourseNames && (
           <List.Item
             title={capitalize(institute.i18n.coursePlural)}
@@ -196,14 +214,6 @@ function Profile() {
             // eslint-disable-next-line react/jsx-props-no-spreading
             left={(props) => <List.Icon {...props} icon="book-outline" />}
             descriptionNumberOfLines={100}
-          />
-        )}
-        {studentClassName && (
-          <List.Item
-            title={capitalize(institute.i18n.classSingular)}
-            description={studentClassName}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            left={(props) => <List.Icon {...props} icon="account-group-outline" />}
           />
         )}
       </List.Section>

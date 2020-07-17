@@ -1,7 +1,8 @@
 // @flow
 import React, { useState, useCallback } from 'react';
-import { Paragraph, useTheme, Button } from 'react-native-paper';
+import { useTheme, Button } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
+import BodyText from './BodyText';
 
 const styles = StyleSheet.create({
   readMore: {
@@ -21,14 +22,14 @@ function ReadMoreText({ text }: Props) {
   const toggle = useCallback(() => setShowAll((val) => !val), []);
 
   if (text.length < 120) {
-    return <Paragraph>{text}</Paragraph>;
+    return <BodyText>{text}</BodyText>;
   }
 
   return (
     <View>
-      <Paragraph numberOfLines={showAll ? 0 : 4}>
+      <BodyText numberOfLines={showAll ? 0 : 4}>
         {text}
-      </Paragraph>
+      </BodyText>
       <Button
         style={[styles.readMore, { color: theme.colors.primary }]}
         onPress={toggle}

@@ -1,9 +1,6 @@
 // @flow
 import React, { useMemo, useContext, useCallback } from 'react';
-import {
-  Card,
-  Paragraph,
-} from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet } from 'react-native';
 
@@ -12,6 +9,7 @@ import config from '../config';
 import useDoc from '../hooks/useDoc';
 import ForumItemMeta from './ForumItemMeta';
 import AccountContext from '../contexts/AccountContext';
+import BodyText from './BodyText';
 
 const styles = StyleSheet.create({
   card: {
@@ -69,7 +67,7 @@ function ReplyCard({ reply }: Props) {
           author={author}
           actions={actions}
         />
-        <Paragraph style={styles.description}>{reply.description}</Paragraph>
+        <BodyText style={styles.description}>{reply.description}</BodyText>
       </Card.Content>
     </Card>
   );

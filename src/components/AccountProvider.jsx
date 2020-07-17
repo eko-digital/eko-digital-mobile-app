@@ -1,8 +1,6 @@
 // @flow
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { ActivityIndicator } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import auth from '@react-native-firebase/auth';
 
@@ -10,14 +8,7 @@ import type { Student, Teacher, Account } from '../types';
 import AccountContext from '../contexts/AccountContext';
 import AccountPicker from './AccountPicker';
 import useMultipleQuery from '../hooks/useMultipleQuery';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 
 type Props = {
   children: React.Node,
@@ -124,11 +115,7 @@ function AccountProvider({ children }: Props) {
   const activeAccount = React.useMemo(() => getActiveAccount(), [getActiveAccount]);
 
   if ((loading || initializing) && !emailVerificationPending) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator animating />
-      </View>
-    );
+    return <FullScreenActivityIndicator />;
   }
 
   return (

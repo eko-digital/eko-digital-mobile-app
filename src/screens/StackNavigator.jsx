@@ -7,20 +7,22 @@ import { capitalize } from '../utils';
 import Header from '../components/Header';
 import AccountContext from '../contexts/AccountContext';
 import BottomTabs from './BottomTabs';
-import NewPost from './NewPost';
+import Course from './Course';
+import NewLesson from './NewLesson';
+import NewAssignment from './NewAssignment';
 import NewTopic from './NewTopic';
-import AccountNotFound from './AccountNotFound';
+import SingleCourseItem from './SingleCourseItem';
 import AccountLoadingError from './AccountLoadingError';
 import InstituteLoadingError from './InstituteLoadingError';
-import Profile from './Profile';
-import Favorites from './Favorites';
-import Settings from './Settings';
+import Notifications from './Notifications';
 import Institute from './Institute';
 import FullScreenImage from './FullScreenImage';
-import VideoScreen from './VideoScreen';
 import TopicScreen from './TopicScreen';
 import VerifyEmail from './VerifyEmail';
 import InstituteContext from '../contexts/InstituteContext';
+import ScheduleLiveClass from './ScheduleLiveClass';
+import LiveClass from './LiveClass';
+import JitsiMeet from './JitsiMeet';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +31,10 @@ function StackNavigator() {
   const { institute, loadingError: instituteLoadingError } = useContext(InstituteContext);
 
   const authUser = auth().currentUser;
+
+  if (!activeAccount) {
+    return null;
+  }
 
   let screens = null;
 
@@ -57,7 +63,7 @@ function StackNavigator() {
       />
     );
   } else {
-    screens = activeAccount ? (
+    screens = (
       <>
         <Stack.Screen
           name="Tabs"
@@ -65,26 +71,18 @@ function StackNavigator() {
           options={({ route }) => {
             const routeName = route.state
               ? route.state.routes[route.state.index].name
-              : 'Lessons';
-            return { headerTitle: routeName };
+              : 'Home';
+            const headerTitle = routeName === 'Home'
+              ? `Hello, ${activeAccount.name.split(' ')[0]}`
+              : routeName;
+            const hasTabs = routeName === 'Bookmarks';
+            return { headerTitle, hasTabs };
           }}
         />
         <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{ title: 'Profile' }}
-        />
-        {!activeAccount.isTeacher && (
-          <Stack.Screen
-            name="Favorites"
-            component={Favorites}
-            options={{ title: 'Favorites' }}
-          />
-        )}
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ title: 'Settings' }}
+          name="Notifications"
+          component={Notifications}
+          options={{ title: 'Notifications' }}
         />
         <Stack.Screen
           name="Institute"
@@ -92,24 +90,49 @@ function StackNavigator() {
           options={{ title: capitalize(institute?.type || 'institute') }}
         />
         <Stack.Screen
+          name="Course"
+          component={Course}
+          options={{ title: '' }}
+        />
+        <Stack.Screen
           name="FullScreenImage"
           component={FullScreenImage}
           options={({ route }) => ({ title: route.params.title })}
         />
-        <Stack.Screen
-          name="VideoScreen"
-          component={VideoScreen}
-          options={({ route }) => ({ title: route.params.post.title })}
-        />
         {activeAccount.isTeacher && (
           <>
             <Stack.Screen
-              name="NewPost"
-              component={NewPost}
-              options={({ route }) => ({ title: `Add new ${route.params.postType}` })}
+              name="ScheduleLiveClass"
+              component={ScheduleLiveClass}
+              options={({ title: 'Schedule live class' })}
+            />
+            <Stack.Screen
+              name="NewLesson"
+              component={NewLesson}
+              options={({ title: 'Add new lesson' })}
+            />
+            <Stack.Screen
+              name="NewAssignment"
+              component={NewAssignment}
+              options={({ title: 'Add new assignment' })}
             />
           </>
         )}
+        <Stack.Screen
+          name="LiveClass"
+          component={LiveClass}
+          options={{ title: 'Live class' }}
+        />
+        <Stack.Screen
+          name="JitsiMeet"
+          component={JitsiMeet}
+          options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name="SingleCourseItem"
+          component={SingleCourseItem}
+          options={({ route }) => ({ title: capitalize(route.params.itemType) })}
+        />
         <Stack.Screen
           name="NewTopic"
           component={NewTopic}
@@ -121,12 +144,6 @@ function StackNavigator() {
           options={({ route }) => ({ title: route.params.topic.title })}
         />
       </>
-    ) : (
-      <Stack.Screen
-        name="AccountNotFound"
-        component={AccountNotFound}
-        options={{ title: 'Eko Digital' }}
-      />
     );
   }
 

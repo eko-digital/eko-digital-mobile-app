@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import color from 'color';
 import { View, StyleSheet } from 'react-native';
 import { Avatar, ActivityIndicator, useTheme } from 'react-native-paper';
 
@@ -40,8 +41,11 @@ function UserAvatar({
     />
   ) : (
     <Avatar.Text
-      style={style}
+      style={[{
+        backgroundColor: color(theme.colors.accent).alpha(0.4).toString(),
+      }, style]}
       label={getInitials(name)}
+      labelStyle={{ color: theme.colors.placeholder, ...theme.fonts.regular }}
       size={size}
     />
   );

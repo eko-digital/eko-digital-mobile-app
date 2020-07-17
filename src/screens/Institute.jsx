@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import {
   Title,
-  Paragraph,
   List,
   useTheme,
 } from 'react-native-paper';
@@ -14,6 +13,7 @@ import { DefaultTheme } from '@react-navigation/native';
 
 import config from '../config';
 import InstituteContext from '../contexts/InstituteContext';
+import BodyText from '../components/BodyText';
 
 const styles = StyleSheet.create({
   container: {
@@ -80,7 +80,9 @@ function Institute() {
       )}
 
       <Title>{institute.name}</Title>
-      <Paragraph style={styles.description}>{institute.description}</Paragraph>
+      {institute.description && (
+        <BodyText style={styles.description}>{institute.description}</BodyText>
+      )}
 
       {(institute.email || institute.phoneNumber) && (
         <List.Section style={styles.contactSection}>

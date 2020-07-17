@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Video from 'react-native-video';
 import { StyleSheet } from 'react-native';
 
-type Props = {
+type Props = {|
   uri: string,
-}
+  poster?: string | null,
+|}
 
 const styles = StyleSheet.create({
   video: {
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function VideoPlayer({ uri }: Props) {
+function VideoPlayer({ uri, poster }: Props) {
   const [showControls, setShowControls] = useState<boolean>(false);
 
   // show controls after first render to prevent control misplacement on Android
@@ -31,6 +32,7 @@ function VideoPlayer({ uri }: Props) {
       resizeMode="contain"
       controls={showControls}
       paused
+      poster={poster}
     />
   );
 }

@@ -31,6 +31,11 @@ function useDocsQuery<Entity>(query: FirebaseFirestoreTypes.Query): Results<Enti
   useEffect(() => {
     isMounted.current = true;
 
+    setLoading(true);
+    setIsOffline(false);
+    setLoadingError(false);
+    setDocs([]);
+
     if (!query) {
       return undefined;
     }

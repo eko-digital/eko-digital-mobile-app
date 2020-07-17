@@ -1,9 +1,7 @@
 // @flow
 import React, { useMemo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { StyleSheet, FlatList, View } from 'react-native';
 import {
-  Paragraph,
   Card,
   Title,
   Subheading,
@@ -19,6 +17,7 @@ import useDocsQuery from '../hooks/useDocsQuery';
 import FullScreenActivityIndicator from '../components/FullScreenActivityIndicator';
 import OfflineScreen from '../components/OfflineScreen';
 import ErrorScreen from '../components/ErrorScreen';
+import BodyText from '../components/BodyText';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,9 +74,9 @@ function TopicScreen({ route }: Props) {
         <Card.Content>
           <ForumItemMeta timestamp={topic.createdAt} author={author} />
           <Title style={styles.title}>{topic.title}</Title>
-          <Paragraph>
+          <BodyText>
             {topic.description}
-          </Paragraph>
+          </BodyText>
         </Card.Content>
       </Card>
       {replies.length > 0 && (

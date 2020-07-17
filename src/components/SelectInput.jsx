@@ -2,22 +2,29 @@
 import React, { useState, useCallback } from 'react';
 import {
   Menu,
-  Button,
-  useTheme,
+  TextInput,
+  TouchableRipple,
+  Text,
 } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
-import config from '../config';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
-  toggleButton: {
-    padding: config.values.space.small,
+  selectText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  icon: {
+    paddingHorizontal: 14,
   },
 });
 
 type Props = {
   label: string,
   selection: string | null,
-  options: Array<{ label: string, value: string }>,
+  options: Array<{ label: string, value: any }>,
+  style?: any,
   onSelect: (value: string) => void,
 }
 
@@ -25,11 +32,10 @@ function SelectInput({
   label,
   selection,
   options,
+  style = null,
   onSelect,
 }: Props) {
   const [visible, setVisible] = useState(false);
-
-  const theme = useTheme();
 
   const toggleMenu = useCallback(() => {
     setVisible((v) => !v);
@@ -37,21 +43,31 @@ function SelectInput({
 
   const currentOption = options.find(({ value }) => selection === value);
 
+  const renderInputText = useCallback((props: { style: any, value: string }) => (
+    <TouchableRipple onPress={toggleMenu} style={styles.selectText}>
+      <>
+        <Text style={props.style}>{props.value}</Text>
+        <MaterialCommunityIcons
+          size={22}
+          name="chevron-down"
+          style={styles.icon}
+        />
+      </>
+    </TouchableRipple>
+  ), [toggleMenu]);
+
   return (
     <Menu
       visible={visible}
       onDismiss={toggleMenu}
       anchor={(
-        <Button
+        <TextInput
+          label={label}
           mode="outlined"
-          onPress={toggleMenu}
-          uppercase={false}
-          labelStyle={styles.toggleButton}
-          icon="chevron-down"
-          color={currentOption ? theme.colors.onSurface : theme.colors.placeholder}
-        >
-          {currentOption ? currentOption.label : label}
-        </Button>
+          style={style}
+          value={currentOption?.label || ''}
+          render={renderInputText}
+        />
       )}
     >
       {options.map((option) => (

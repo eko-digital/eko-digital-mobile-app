@@ -1,9 +1,5 @@
 // @flow
 import React from 'react';
-import {
-  DrawerContentComponentProps,
-  DrawerNavigationProp,
-} from '@react-navigation/drawer';
 
 import type { Account } from '../types';
 
@@ -12,7 +8,7 @@ type Props = {|
   loadingError: boolean,
   isOffline: boolean,
   activeAccount: Account | null,
-  switchAccount: (navigation: DrawerContentComponentProps<DrawerNavigationProp>) => void,
+  switchAccount: (navigation: any) => void,
 |}
 
 const AccountContext = React.createContext<Props>({

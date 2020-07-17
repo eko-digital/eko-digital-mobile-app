@@ -2,35 +2,22 @@
 import React, { useContext } from 'react';
 import color from 'color';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { useTheme, Portal } from 'react-native-paper';
-import { useIsFocused, RouteProp, useNavigation } from '@react-navigation/native';
+import { useTheme } from 'react-native-paper';
 import { Platform } from 'react-native';
 
 import overlay from '../overlay';
-import Lessons from './Lessons';
-import Assignments from './Assignments';
-import Discuss from './Discuss';
-import Notifications from './Notifications';
+import Home from './Home';
+import Profile from './Profile';
+import Bookmarks from './Bookmarks';
 import AccountContext from '../contexts/AccountContext';
-import AddLessonFABGroup from '../components/AddLessonFABGroup';
-import AddAssignmentFABGroup from '../components/AddAssignmentFABGroup';
-import AddTopicFab from '../components/AddTopicFab';
+import Settings from './Settings';
 
 const Tab = createMaterialBottomTabNavigator();
 
-type Props = {
-  route: RouteProp<any, 'LessonsList'>;
-};
-
-function BottomTabs({ route }: Props) {
+function BottomTabs() {
   const { activeAccount } = useContext(AccountContext);
-  const { navigate } = useNavigation();
-  const routeName = route.state
-    ? route.state.routes[route.state.index].name
-    : 'Lessons';
 
   const theme = useTheme();
-  const isFocused = useIsFocused();
 
   const tabBarColor = theme.dark
     ? overlay(6, theme.colors.surface)
@@ -45,58 +32,55 @@ function BottomTabs({ route }: Props) {
   return (
     <>
       <Tab.Navigator
-        initialRouteName="Lessons"
+        initialRouteName="Home"
         backBehavior="initialRoute"
         activeColor={theme.colors.primary}
         inactiveColor={inactiveTabColor}
+        theme={theme}
         // disable scene animation on android until following bug is fixed
         // https://github.com/facebook/react-native/issues/23090#issuecomment-642279615
         sceneAnimationEnabled={Platform.OS !== 'android'}
+        barStyle={{ backgroundColor: tabBarColor }}
+        shifting={false}
       >
         <Tab.Screen
-          name="Lessons"
-          component={Lessons}
+          name="Home"
+          component={Home}
           options={{
-            tabBarIcon: 'teach',
+            tabBarIcon: 'book-open-outline',
+            tabBarColor,
+          }}
+          navigationOptions={{
+            headerTitle: activeAccount ? `Hello, ${activeAccount.name.split(' ')[0]}` : 'Home',
+          }}
+        />
+        {!activeAccount?.isTeacher && (
+          <Tab.Screen
+            name="Bookmarks"
+            component={Bookmarks}
+            options={{
+              tabBarIcon: 'bookmark-multiple-outline',
+              tabBarColor,
+            }}
+          />
+        )}
+        <Tab.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            tabBarIcon: 'settings-outline',
             tabBarColor,
           }}
         />
         <Tab.Screen
-          name="Assignments"
-          component={Assignments}
+          name="You"
+          component={Profile}
           options={{
-            tabBarIcon: 'clipboard-text-outline',
-            tabBarColor,
-          }}
-        />
-        <Tab.Screen
-          name="Discuss"
-          component={Discuss}
-          options={{
-            tabBarIcon: 'forum-outline',
-            tabBarColor,
-          }}
-        />
-        <Tab.Screen
-          name="Notifications"
-          component={Notifications}
-          options={{
-            tabBarIcon: 'bell-outline',
+            tabBarIcon: 'account-circle-outline',
             tabBarColor,
           }}
         />
       </Tab.Navigator>
-      <Portal>
-        {isFocused && activeAccount?.isTeacher && routeName === 'Lessons' && (
-          <AddLessonFABGroup navigate={navigate} />
-        )}
-        {isFocused && activeAccount?.isTeacher && routeName === 'Assignments' && (
-          <AddAssignmentFABGroup navigate={navigate} />
-        )}
-        {isFocused && activeAccount && routeName === 'Discuss' && (
-          <AddTopicFab navigate={navigate} />
-        )}
-      </Portal>
     </>
   );
 }

@@ -27,10 +27,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    minHeight: LEFT_SIZE,
+    paddingVertical: 10,
   },
 
   title: {
-    minHeight: 30,
+    fontSize: 18,
+    lineHeight: 22,
   },
 
   subtitle: {
@@ -72,7 +75,10 @@ function MultilineCardTitle(props: Props) {
     <View
       style={[
         styles.container,
-        { minHeight: subtitle || left || right ? 72 : 50 },
+        {
+          minHeight: subtitle || left || right ? 72 : 50,
+          paddingRight: right ? 0 : 16,
+        },
         style,
       ]}
     >

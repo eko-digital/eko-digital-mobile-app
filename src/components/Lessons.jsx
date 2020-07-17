@@ -3,16 +3,15 @@ import React, { useContext, useMemo } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { FlatList, StyleSheet } from 'react-native';
 
-import type { Post, PostType } from '../types';
+import type { Lesson, Course } from '../types';
 import EmptyScreen from './EmptyScreen';
 import AccountContext from '../contexts/AccountContext';
 import noLessons from '../images/no-lessons.png';
-import noAssignments from '../images/no-assignments.png';
 import useDocsQuery from '../hooks/useDocsQuery';
 import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import ErrorScreen from './ErrorScreen';
 import OfflineScreen from './OfflineScreen';
-import PostCard from './PostCard';
+import CourseItem from './CourseItem';
 import config from '../config';
 
 const styles = StyleSheet.create({
@@ -21,14 +20,12 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
-  postType: PostType,
-}
+type Props = {|
+  course: Course,
+|}
 
-function Posts({ postType }: Props) {
+function Lessons({ course }: Props) {
   const { activeAccount } = useContext(AccountContext);
-
-  const collection = useMemo(() => (postType === 'lesson' ? 'lessons' : 'assignments'), [postType]);
 
   const query = useMemo(() => {
     if (!activeAccount) {
@@ -36,29 +33,25 @@ function Posts({ postType }: Props) {
     }
 
     if (activeAccount?.isTeacher) {
-      return firestore().collection(collection)
-        .where('institute', '==', activeAccount.institute)
+      return firestore().collection('lessons')
+        .where('course', '==', course.id)
         .where('teacher', '==', activeAccount.id)
         .orderBy('createdAt', 'desc');
     }
 
-    if (!activeAccount || activeAccount.isTeacher) {
-      return null;
-    }
-
-    return firestore().collection(collection)
-      .where('course', 'in', activeAccount.courses)
+    return firestore().collection('lessons')
+      .where('course', '==', course.id)
       .where('status', '==', 'available')
       .orderBy('createdAt', 'desc');
-  }, [activeAccount, collection]);
+  }, [activeAccount, course.id]);
 
   const {
-    docs: posts,
+    docs: lessons,
     loading,
     loadingError,
     isOffline,
     retry,
-  } = useDocsQuery<Post>(query);
+  } = useDocsQuery<Lesson>(query);
 
   if (!activeAccount) {
     return null;
@@ -68,27 +61,27 @@ function Posts({ postType }: Props) {
     return <FullScreenActivityIndicator />;
   }
 
-  if (isOffline && posts.length === 0) {
+  if (isOffline && lessons.length === 0) {
     return <OfflineScreen onRetry={retry} />;
   }
 
-  if (loadingError && posts.length === 0) {
+  if (loadingError && lessons.length === 0) {
     return (
       <ErrorScreen
-        description={`Something went wrong while fetching ${collection}.`}
+        description="Something went wrong while fetching lessons"
       />
     );
   }
 
-  if (posts.length === 0) {
+  if (lessons.length === 0) {
     return (
       <EmptyScreen
-        illustration={postType === 'lesson' ? noLessons : noAssignments}
-        title={`No ${collection}, yet!`}
+        illustration={noLessons}
+        title="No lessons, yet!"
         description={
           activeAccount?.isTeacher
-            ? `You haven't added any ${collection} yet. Add one using the big + button at the bottom right corner.`
-            : `Your ${collection} will appear here when your teachers add them. Stay tuned.`
+            ? 'You haven\'t added any lessons yet. Add one using the big + button at the bottom right corner.'
+            : 'Your lessons will appear here when your teachers add them. Stay tuned.'
         }
       />
     );
@@ -100,11 +93,11 @@ function Posts({ postType }: Props) {
         styles.container,
         activeAccount?.isTeacher ? { paddingBottom: 100 } : null,
       ]}
-      data={posts}
+      data={lessons}
       renderItem={({ item }) => (
-        <PostCard
-          post={item}
-          postType={postType}
+        <CourseItem
+          item={item}
+          itemType="lesson"
           activeAccount={activeAccount}
         />
       )}
@@ -113,4 +106,4 @@ function Posts({ postType }: Props) {
   );
 }
 
-export default Posts;
+export default Lessons;

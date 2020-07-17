@@ -1,37 +1,40 @@
 // @flow
-import React from 'react';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import * as React from 'react';
+import { TabView, TabBar } from 'react-native-tab-view';
 import { Dimensions } from 'react-native';
 import { useTheme, Paragraph } from 'react-native-paper';
 import color from 'color';
 
-import FavoritesList from '../components/FavoritesList';
 import overlay from '../overlay';
-
-const FavoriteLessons = () => (
-  <FavoritesList collection="lessons" />
-);
-
-const FavoriteAssignments = () => (
-  <FavoritesList collection="assignments" />
-);
 
 const initialLayout = { width: Dimensions.get('window').width };
 
-function Favorites() {
-  const [index, setIndex] = React.useState(0);
+type Props = {|
+  routes: Array<{
+    key: string;
+    title: string;
+  }>,
+  scrollEnabled?: boolean,
+  renderScene: ({ route: any, jumpTo: any, position: any }) => React.Element<any> | null,
+  onIndexChange?: (index: number) => any,
+|}
+
+function Tabs({
+  routes,
+  scrollEnabled = false,
+  renderScene,
+  onIndexChange,
+}: Props) {
+  const [index, setIndex] = React.useState<number>(0);
 
   const theme = useTheme();
 
-  const [routes] = React.useState([
-    { key: 'lessons', title: 'Lessons' },
-    { key: 'assignments', title: 'Assignments' },
-  ]);
-
-  const renderScene = SceneMap({
-    lessons: FavoriteLessons,
-    assignments: FavoriteAssignments,
-  });
+  const handleIndexChange = React.useCallback((newIndex) => {
+    setIndex(newIndex);
+    if (onIndexChange) {
+      onIndexChange(newIndex);
+    }
+  }, [onIndexChange]);
 
   const tabBarColor = theme.dark
     ? (overlay(4, theme.colors.surface))
@@ -62,6 +65,7 @@ function Favorites() {
         </Paragraph>
       )}
       pressColor={rippleColor}
+      scrollEnabled={scrollEnabled}
     />
   );
 
@@ -71,10 +75,11 @@ function Favorites() {
       navigationState={{ index, routes }}
       renderScene={renderScene}
       renderTabBar={renderTabBar}
-      onIndexChange={setIndex}
+      onIndexChange={handleIndexChange}
       initialLayout={initialLayout}
+      removeClippedSubviews
     />
   );
 }
 
-export default Favorites;
+export default Tabs;

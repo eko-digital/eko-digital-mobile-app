@@ -5,22 +5,24 @@ import React, {
 import { Alert, StyleSheet } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Button, Paragraph, useTheme } from 'react-native-paper';
+import { Button, useTheme } from 'react-native-paper';
 
 import EmptyScreen from '../components/EmptyScreen';
 import messageSent from '../images/message-sent.png';
 import config from '../config';
+import BodyText from '../components/BodyText';
 
 const storageKey = 'confirmation-email-sent';
 
 const styles = StyleSheet.create({
   email: {
     marginBottom: config.values.space.small,
+    textAlign: 'center',
   },
 
   paragraph: {
-    textAlign: 'center',
     marginBottom: config.values.space.large,
+    textAlign: 'center',
   },
 });
 
@@ -79,10 +81,10 @@ function VerifyEmail() {
       description="We have sent a confirmation link to:"
       extra={(
         <>
-          <Paragraph style={[styles.email, { ...theme.fonts.medium }]}>{authUser.email}</Paragraph>
-          <Paragraph style={styles.paragraph}>
+          <BodyText style={[styles.email, { ...theme.fonts.medium }]}>{authUser.email}</BodyText>
+          <BodyText style={styles.paragraph}>
             Check your email and click on the confirmation link to continue.
-          </Paragraph>
+          </BodyText>
           <Button
             mode="text"
             onPress={sendEmail}

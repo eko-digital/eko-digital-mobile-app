@@ -10,29 +10,20 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useMemo,
 } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
-import { Provider as PaperProvider } from 'react-native-paper';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import { activateKeepAwake } from 'expo-keep-awake';
 
 import config from './config';
 import Main from './screens/Main';
 import RNFirebaseAuthUI from './RNFirebaseAuthUI';
-import PreferencesContext from './contexts/PreferencesContext';
 import AccountProvider from './components/AccountProvider';
+import PreferencesProvider from './components/PreferencesProvider';
 
 function App() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
-
-  const colorScheme = useColorScheme();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-  const loadSavedThemePreference = useCallback(async () => {
-    setTheme(colorScheme === 'dark' ? 'dark' : 'light');
-  }, [colorScheme]);
 
   const handleDynamicLink = useCallback(async (link: { url: string } | null) => {
     const { currentUser } = auth();
@@ -43,21 +34,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    loadSavedThemePreference();
-    // dynamic links
     dynamicLinks().getInitialLink().then(handleDynamicLink);
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     return () => unsubscribe;
-  }, [handleDynamicLink, loadSavedThemePreference]);
-
-  const toggleTheme = useCallback(() => {
-    setTheme((activeTheme) => (activeTheme === 'light' ? 'dark' : 'light'));
-  }, []);
-
-  const preferences = useMemo(() => ({
-    toggleTheme,
-    theme,
-  }), [theme, toggleTheme]);
+  }, [handleDynamicLink]);
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((authUser) => {
@@ -72,23 +52,21 @@ function App() {
     return unsubscribe;
   }, []);
 
+  if (__DEV__) {
+    activateKeepAwake();
+  }
+
   if (!user) {
     return null;
   }
 
   return (
     <SafeAreaProvider>
-      <AppearanceProvider>
-        <PreferencesContext.Provider value={preferences}>
-          <PaperProvider
-            theme={theme === 'light' ? config.themes.DefaultTheme : config.themes.DarkTheme}
-          >
-            <AccountProvider>
-              <Main />
-            </AccountProvider>
-          </PaperProvider>
-        </PreferencesContext.Provider>
-      </AppearanceProvider>
+      <PreferencesProvider>
+        <AccountProvider>
+          <Main />
+        </AccountProvider>
+      </PreferencesProvider>
     </SafeAreaProvider>
   );
 }

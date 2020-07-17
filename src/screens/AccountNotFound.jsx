@@ -1,11 +1,12 @@
 // @flow
 import React, { useMemo, useCallback } from 'react';
-import { Button, Paragraph } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { Linking, StyleSheet } from 'react-native';
 
 import emptyState from '../images/empty-state.png';
 import EmptyScreen from '../components/EmptyScreen';
+import BodyText from '../components/BodyText';
 import config from '../config';
 
 const ekoDigitalHomeUrl = 'https://eko.digital';
@@ -13,6 +14,9 @@ const ekoDigitalHomeUrl = 'https://eko.digital';
 const styles = StyleSheet.create({
   button: {
     marginTop: config.values.space.large,
+  },
+  paragraph: {
+    textAlign: 'center',
   },
 });
 
@@ -50,7 +54,9 @@ function AccountNotFound() {
       }
       extra={(
         <>
-          <Paragraph>If you are a school, college or institute then sign up at</Paragraph>
+          <BodyText style={styles.paragraph}>
+            If you are a school, college or institute then sign up at
+          </BodyText>
           <Button
             mode="text"
             onClick={openEkoDigital}

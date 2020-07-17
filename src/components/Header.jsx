@@ -1,13 +1,9 @@
 // @flow
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import color from 'color';
 import auth from '@react-native-firebase/auth';
 import { TouchableOpacity } from 'react-native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import {
-  Appbar,
-  useTheme,
-  Menu,
-} from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 
 import AccountContext from '../contexts/AccountContext';
 import UserAvatar from './UserAvatar';
@@ -15,21 +11,20 @@ import UserAvatar from './UserAvatar';
 type Props = {
   scene: any,
   previous: boolean,
-  navigation: DrawerNavigationProp,
+  navigation: any,
 }
 
 function Header({ scene, previous, navigation }: Props) {
-  const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const theme = useTheme();
-  const { activeAccount } = React.useContext(AccountContext);
+  const { activeAccount, switchAccount } = React.useContext(AccountContext);
 
-  const toggleMenu = useCallback(() => {
-    setMenuVisible((v) => !v);
-  }, []);
+  const navigateToNotifications = useCallback(async () => {
+    navigation.navigate('Notifications');
+  }, [navigation]);
 
-  const handleLogout = useCallback(async () => {
-    auth().signOut();
-  }, []);
+  const handleSwitchAccount = useCallback(async () => {
+    switchAccount();
+  }, [switchAccount]);
 
   const { options } = scene.descriptor;
 
@@ -42,9 +37,20 @@ function Header({ scene, previous, navigation }: Props) {
     title = scene.route.name;
   }
 
+  const headerStyle = useMemo(() => {
+    const style = {};
+
+    if (options.hasTabs) {
+      style.elevation = 0;
+    }
+
+    return style;
+  }, [options.hasTabs]);
+
   return (
     <Appbar.Header
       theme={{ colors: { primary: theme.colors.surface } }}
+      style={headerStyle}
     >
       {previous && (
         <Appbar.BackAction
@@ -53,40 +59,39 @@ function Header({ scene, previous, navigation }: Props) {
         />
       )}
 
-      {!previous && activeAccount && (
-        <TouchableOpacity
-          style={{ marginLeft: 10 }}
-          onPress={() => {
-            navigation.openDrawer();
-          }}
-        >
-          <UserAvatar
-            photoURL={activeAccount.photoURL}
-            name={activeAccount.name}
-          />
-        </TouchableOpacity>
-      )}
-
       <Appbar.Content
         title={title}
         titleStyle={{
           fontSize: 18,
-          color: theme.colors.onSurface,
+          color: theme.colors.text,
         }}
+        subtitle={options.subtitle}
       />
 
-      {options.headerRight || (
-        <Menu
-          visible={menuVisible}
-          onDismiss={toggleMenu}
-          anchor={
-            <Appbar.Action icon="dots-vertical" onPress={toggleMenu} color={theme.colors.onSurface} />
-          }
-        >
-          <Menu.Item onPress={() => { }} title="Help" icon="help-circle-outline" />
-          <Menu.Item onPress={handleLogout} title="Log out" icon="logout-variant" />
-        </Menu>
+      {!previous && (
+        <Appbar.Action
+          title="Notifications"
+          icon="bell-outline"
+          color={theme.colors.placeholder}
+          style={{ backgroundColor: color(theme.colors.placeholder).alpha(0.08).toString() }}
+          onPress={navigateToNotifications}
+        />
       )}
+
+      {!previous && activeAccount && (
+        <TouchableOpacity
+          style={{ marginHorizontal: 10 }}
+          onPress={handleSwitchAccount}
+        >
+          <UserAvatar
+            photoURL={activeAccount.photoURL || auth().currentUser.photoURL}
+            name={activeAccount.name}
+            size={36}
+          />
+        </TouchableOpacity>
+      )}
+
+      {options.headerRight}
     </Appbar.Header>
   );
 }

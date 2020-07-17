@@ -124,6 +124,7 @@ function NewTopic({ route, navigation }: Props) {
         label="Description"
         mode="outlined"
         multiline
+        numberOfLines={8}
         value={description}
         style={styles.textInput}
         onChangeText={setDescription}

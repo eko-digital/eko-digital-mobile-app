@@ -4,21 +4,24 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
 } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { FlatList } from 'react-native-gesture-handler';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, FlatList } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 
-import type { Post } from '../types';
+import type {
+  Lesson, Assignment, CourseItemType,
+} from '../types';
 import EmptyScreen from './EmptyScreen';
 import waiting from '../images/waiting.png';
 import AccountContext from '../contexts/AccountContext';
 import FullScreenActivityIndicator from './FullScreenActivityIndicator';
 import ErrorScreen from './ErrorScreen';
 import OfflineScreen from './OfflineScreen';
-import PostCard from './PostCard';
+import CourseItem from './CourseItem';
 import config from '../config';
+import { capitalize } from '../utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,18 +30,20 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-  collection: 'lessons' | 'assignments';
+  itemType: CourseItemType,
 }
 
-function FavoritesList({ collection }: Props) {
-  const [favorites, setFavorites] = useState<Post[]>([]);
+function BookmarksList({ itemType }: Props) {
+  const [items, setItems] = useState<Array<Lesson | Assignment>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingError, setLoadingError] = useState<boolean>(false);
   const { activeAccount } = useContext(AccountContext);
 
   const netInfo = useNetInfo();
+  const collection = useMemo(() => `${itemType}s`, [itemType]);
+  const bookmarksField = useMemo(() => `bookmarked${capitalize(itemType)}s`, [itemType]);
 
-  const fetchFavorites = useCallback(async () => {
+  const fetchItems = useCallback(async () => {
     if (!activeAccount || activeAccount.isTeacher) {
       return;
     }
@@ -46,19 +51,16 @@ function FavoritesList({ collection }: Props) {
     setLoading(true);
     setLoadingError(false);
 
-    const favIds = collection === 'lessons'
-      ? activeAccount.favoriteLessons
-      : activeAccount.favoriteAssignments;
-
-    if (favIds && favIds.length > 0) {
+    if (activeAccount[bookmarksField] && activeAccount[bookmarksField].length > 0) {
       try {
         const snaps = await Promise.all(
-          favIds.map((id) => firestore().collection(collection).doc(id).get()),
+          activeAccount[bookmarksField]
+            .map((id) => firestore().collection(collection).doc(id).get()),
         );
         const docs = snaps
           .filter((snap) => snap.exists)
           .map((snap) => ({ id: snap.id, ...snap.data() }));
-        setFavorites(docs);
+        setItems(docs);
       } catch (error) {
         setLoadingError(true);
         if (__DEV__) {
@@ -66,13 +68,15 @@ function FavoritesList({ collection }: Props) {
           console.error(error);
         }
       }
+    } else {
+      setItems([]);
     }
     setLoading(false);
-  }, [activeAccount, collection]);
+  }, [activeAccount, bookmarksField, collection]);
 
   useEffect(() => {
-    fetchFavorites();
-  }, [fetchFavorites]);
+    fetchItems();
+  }, [fetchItems]);
 
   if (!activeAccount) {
     return null;
@@ -82,8 +86,8 @@ function FavoritesList({ collection }: Props) {
     return <FullScreenActivityIndicator />;
   }
 
-  if (!netInfo.isConnected && favorites.length === 0) {
-    return <OfflineScreen onRetry={fetchFavorites} />;
+  if (!netInfo.isConnected && items.length === 0) {
+    return <OfflineScreen onRetry={fetchItems} />;
   }
 
   if (loadingError) {
@@ -94,12 +98,12 @@ function FavoritesList({ collection }: Props) {
     );
   }
 
-  if (favorites.length === 0) {
+  if (items.length === 0) {
     return (
       <EmptyScreen
         illustration={waiting}
-        title={`Your favorite ${collection}`}
-        description={`You can add a ${collection === 'lessons' ? 'lesson' : 'assignment'} to favorites by tapping on the heart icon.`}
+        title={`Your bookmarked ${collection}`}
+        description={`You can bookmark ${itemType === 'assignment' ? 'an assignment' : `a ${itemType}`} by tapping on the bookmark icon.`}
       />
     );
   }
@@ -107,11 +111,11 @@ function FavoritesList({ collection }: Props) {
   return (
     <FlatList
       contentContainerStyle={styles.container}
-      data={favorites}
+      data={items}
       renderItem={({ item }) => (
-        <PostCard
-          post={item}
-          postType={collection === 'lessons' ? 'lesson' : 'assignment'}
+        <CourseItem
+          item={item}
+          itemType={itemType}
           activeAccount={activeAccount}
         />
       )}
@@ -120,4 +124,4 @@ function FavoritesList({ collection }: Props) {
   );
 }
 
-export default FavoritesList;
+export default BookmarksList;

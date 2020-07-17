@@ -10,10 +10,10 @@ import useDocsQuery from '../hooks/useDocsQuery';
 
 type Props = {
   children: React.Node,
-  instituteId?: string,
+  instituteId: string,
 };
 
-function InstituteProvider({ children, instituteId = null }: Props) {
+function InstituteProvider({ children, instituteId }: Props) {
   const instituteRef = React.useMemo(() => instituteId && firestore().collection('institute-data').doc(instituteId), [instituteId]);
 
   const {
@@ -59,7 +59,7 @@ function InstituteProvider({ children, instituteId = null }: Props) {
   } = useDocsQuery<Klass>(classesQuery);
 
   const value = {
-    loading: loading || coursesLoading,
+    loading: loading || coursesLoading || classesLoading,
     loadingError: loadingError || coursesLoadingError || classesLoadingError,
     isOffline: isOffline || coursesIsOffline || classesIsOffline,
     isSetupPending: !exists,

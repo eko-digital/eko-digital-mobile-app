@@ -8,9 +8,9 @@
 <br>
 <br>
 
-> **Under development**
+> **Archived**
 >
-> This app and the Eko Digital platform are **not ready for use** yet!
+> I'm no longer working on this project. I made it open source and archived the repo so that others (including my future self) can use bits and pieces from it.
 
 <br>
 
